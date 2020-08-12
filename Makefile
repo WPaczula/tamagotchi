@@ -15,7 +15,7 @@ image: lint
 
 start: stop lint
 	$(DOCKER_COMPOSE) run --user="root" --rm web -- ./initdb.sh
-	NODE_ENV=development $(DOCKER_COMPOSE) up -d web
+	NODE_ENV=development $(DOCKER_COMPOSE) up web
 
 stop:
 	$(DOCKER_COMPOSE) down --volumes --remove-orphans

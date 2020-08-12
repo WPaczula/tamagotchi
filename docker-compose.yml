@@ -10,7 +10,7 @@ services:
       - postgres
     environment:
       PORT: 3001
-    command: -- ./node_modules/.bin/nodemon --watch ./ index.js
+    command: -- ./node_modules/.bin/ts-node-dev index.ts
     volumes:
       - ./src:/usr/src/app
 
