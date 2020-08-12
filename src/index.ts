@@ -4,6 +4,7 @@ import express from 'express';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import cors from 'cors';
+import { errorHandler, notFound } from './middlewares';
 
 const app = express();
 
@@ -17,6 +18,9 @@ app.use(cors());
 app.get('/', (req, res) => {
   res.json({ message: 'hello world' });
 });
+
+app.use(notFound);
+app.use(errorHandler);
 
 const init = async () => {
   try {
