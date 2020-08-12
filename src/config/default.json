@@ -1,0 +1,32 @@
+{
+    "appConfig": {
+        "host": "0.0.0.0",
+        "port": 3000
+    },
+    "dbConfig": {},
+    "swaggerConfig": {
+        "schemes": [
+            "http"
+        ],
+        "basePath": "/",
+        "info": {
+            "title": "Tamagotchi API",
+            "description": "Tamagotchi API description",
+            "version": "0.1.0"
+        },
+        "tags": [
+            {
+                "name": "default",
+                "description": "Default operations"
+            },
+            {
+                "name": "test",
+                "description": "Api operations"
+            }
+        ],
+        "grouping": "tags",
+        "swaggerUI": false,
+        "documentationPage": true,
+        "documentationPath": "/api-docs"
+    }
+}

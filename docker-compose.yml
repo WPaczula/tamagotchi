@@ -1,0 +1,27 @@
+version: "3.7"
+services:
+  web:
+    build:
+      context: ./
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3001:3001"
+    depends_on:
+      - postgres
+    environment:
+      PORT: 3001
+    command: -- ./node_modules/.bin/nodemon --watch ./ index.js
+    volumes:
+      - ./src:/usr/src/app
+
+  postgres:
+    image: postgres:12-alpine
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: "trust"
+
+networks:
+  default:
+    driver: bridge

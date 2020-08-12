@@ -1,0 +1,12 @@
+{
+    "appConfig": {
+        "host": "HOST",
+        "port": "PORT"
+    },
+    "dbConfig": {
+      "host": "POSTGRES_HOST",
+      "database": "POSTGRES_DB",
+      "user": "POSTGRES_USER",
+      "password": "POSTGRES_PASSWORD"
+    }
+}
