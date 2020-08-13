@@ -16,7 +16,9 @@ export const makeRegisterHandler = (
     }
     const user = await newUserFactory(email, password, firstName, lastName);
 
-    res.status(200).json(user);
+    await usersRepository.addUser(user);
+
+    res.status(201).end();
   } catch (error) {
     next(error);
   }
