@@ -2,6 +2,7 @@ import { errorHandler } from '../../middlewares/error-handling';
 import { stub } from 'sinon';
 import { mockRequest, mockResponse } from 'mock-req-res';
 import { expect } from 'chai';
+import ValidationError from '../../errors/validation';
 
 describe('errorHandler', () => {
   let initialEnvironmentVariable: string | undefined;
@@ -55,5 +56,14 @@ describe('errorHandler', () => {
     errorHandler(error, mockRequest(), res, stub());
 
     expect(res.status).to.have.been.calledWith(500);
+  });
+
+  it('should return ValidationError with 400 status.', () => {
+    const error = new ValidationError('name is required');
+    const res = mockResponse();
+
+    errorHandler(error, mockRequest(), res, stub());
+
+    expect(res.status).to.have.been.calledWith(400);
   });
 });

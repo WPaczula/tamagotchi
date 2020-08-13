@@ -5,13 +5,13 @@ import morgan from 'morgan';
 import helmet from 'helmet';
 import cors from 'cors';
 import { errorHandler, notFound } from './middlewares';
-import makeUsersRoutes from './features/user/routes';
+import { makeUsersRoutes, makeAuthRoutes } from './features/user/routes';
 
 const makeServer = async (dbClient: DBClient) => {
   const app = express();
 
   // apply middlewares
-  app.use(express.urlencoded({ extended: true }));
+  app.use(express.json());
   app.use(morgan('common'));
   app.use(helmet());
   app.use(cors());
@@ -20,6 +20,7 @@ const makeServer = async (dbClient: DBClient) => {
   app.get('/', (req, res) => {
     res.json({ message: 'hello world' });
   });
+  app.use(makeAuthRoutes(dbClient));
   app.use('/users', makeUsersRoutes(dbClient));
 
   app.use(notFound);
