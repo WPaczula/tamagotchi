@@ -6,10 +6,8 @@ export const makeUsersRepository = (client: DBClient) => {
     getUsers: async (): Promise<IUser[]> => {
       const users = (
         await client.query<IUser>(
-          `
-          SELECT u.id, u.email, u.password, u.firstName, u.lastName 
-          FROM users u
-          `
+          `SELECT u.id, u.email, u.password, u.firstName, u.lastName 
+          FROM users u`
         )
       ).rows;
 
@@ -20,11 +18,9 @@ export const makeUsersRepository = (client: DBClient) => {
       const isEmailInUse =
         (
           await client.query<IUser>(
-            `
-        SELECT 1
-        FROM users u
-        WHERE u.email = $1
-      `,
+            `SELECT 1
+              FROM users u
+              WHERE u.email = $1`,
             [email]
           )
         ).rowCount > 0;

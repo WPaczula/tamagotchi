@@ -7,18 +7,28 @@ export interface INewUser {
   readonly lastName?: string;
 }
 
-export const makeNewUser = async (
+export const makeNewUserFactory = (
+  hash: (text: string) => Promise<string>
+) => async (
   email: string,
   password: string,
   firstName?: string,
   lastName?: string
 ): Promise<INewUser> => {
-  const user = await validateNewUser({
+  const userData = await validateNewUser({
     email,
     password,
     firstName,
     lastName,
   });
 
+  const hashedPassword = await hash(password);
+
+  const user = {
+    ...userData,
+    password: hashedPassword,
+  };
+
   return Object.freeze(user);
 };
+export type NewUserFactory = ReturnType<typeof makeNewUserFactory>;
