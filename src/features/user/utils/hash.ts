@@ -5,3 +5,4 @@ export const hash = async (text: string): Promise<string> => {
 
   return hashedText;
 };
+export type HashFunction = typeof hash;

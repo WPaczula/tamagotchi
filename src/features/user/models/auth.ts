@@ -1,4 +1,5 @@
 import { validateNewUser } from '../validators';
+import { HashFunction } from '../utils/hash';
 
 export interface INewUser {
   readonly email: string;
@@ -7,9 +8,7 @@ export interface INewUser {
   readonly lastName?: string;
 }
 
-export const makeNewUserFactory = (
-  hash: (text: string) => Promise<string>
-) => async (
+export const makeNewUserFactory = (hash: HashFunction) => async (
   email: string,
   password: string,
   firstName?: string,
