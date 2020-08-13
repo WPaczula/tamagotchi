@@ -6,9 +6,12 @@ import helmet from 'helmet';
 import cors from 'cors';
 import { errorHandler, notFound } from './middlewares';
 import { makeUsersRoutes, makeAuthRoutes } from './features/user/routes';
+import initializeSwagger from './utils/initialize-swagger';
 
 const makeServer = async (dbClient: DBClient) => {
   const app = express();
+
+  initializeSwagger(app);
 
   // apply middlewares
   app.use(express.json());
@@ -20,7 +23,7 @@ const makeServer = async (dbClient: DBClient) => {
   app.get('/', (req, res) => {
     res.json({ message: 'hello world' });
   });
-  app.use(makeAuthRoutes(dbClient));
+  app.use('/', makeAuthRoutes(dbClient));
   app.use('/users', makeUsersRoutes(dbClient));
 
   app.use(notFound);
