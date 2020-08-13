@@ -5,26 +5,27 @@ import morgan from 'morgan';
 import helmet from 'helmet';
 import cors from 'cors';
 import { errorHandler, notFound } from './middlewares';
-
-const app = express();
-
-// apply middlewares
-app.use(express.urlencoded({ extended: true }));
-app.use(morgan('common'));
-app.use(helmet());
-app.use(cors());
-
-// add routes
-app.get('/', (req, res) => {
-  res.json({ message: 'hello world' });
-});
-
-app.use(notFound);
-app.use(errorHandler);
+import makeUsersRoutes from './features/user/routes';
 
 const init = async () => {
   try {
-    await initDBClient();
+    const app = express();
+    const client = await initDBClient();
+
+    // apply middlewares
+    app.use(express.urlencoded({ extended: true }));
+    app.use(morgan('common'));
+    app.use(helmet());
+    app.use(cors());
+
+    // add routes
+    app.get('/', (req, res) => {
+      res.json({ message: 'hello world' });
+    });
+    app.use('/users', makeUsersRoutes(client));
+
+    app.use(notFound);
+    app.use(errorHandler);
 
     const host = config.get('appConfig.host') as string;
     const port = config.get('appConfig.port') as number;
