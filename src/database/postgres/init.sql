@@ -1,4 +1,9 @@
-CREATE TABLE IF NOT EXISTS users(id bigserial primary key, email varchar(255), password varchar(255), lastName varchar(255), firstName varchar(255));
+CREATE TABLE IF NOT EXISTS users(
+  id BIGSERIAL PRIMARY KEY, 
+  email VARCHAR(255) NOT NULL, 
+  password VARCHAR(255) NOT NULL, 
+  lastName varchar(255), 
+  firstName varchar(255), UNIQUE (email));
 
 DO $$
 DECLARE
