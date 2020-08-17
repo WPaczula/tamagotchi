@@ -5,7 +5,9 @@ type DBClientOptions<T> = {
   queryRows?: T[];
 };
 
-const makeDBClient = <T>({ queryRows = [] }: DBClientOptions<T>): DBClient => {
+const makeDBClient = <T>({
+  queryRows = [],
+}: DBClientOptions<T> = {}): DBClient => {
   const query = () =>
     Promise.resolve({
       rows: queryRows,

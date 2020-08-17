@@ -67,7 +67,7 @@ export const makeUsersRepository = (client: DBClient) => {
       return users;
     },
 
-    findOne: async function (user: Partial<User>): Promise<User> {
+    findOne: async function (user: Partial<User>): Promise<User | undefined> {
       const users = await this.find(user);
 
       if (users.length > 1) {

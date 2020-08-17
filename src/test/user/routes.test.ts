@@ -1,7 +1,11 @@
 import request from 'supertest';
 import makeServer from '../../app';
 import makeDBClient from '../factory/db-client';
-import { makeUser, makeUserDto } from '../factory/user';
+import {
+  makeUser,
+  makeUserDto,
+  makeFakeUsersRepositoryFactory,
+} from '../factory/user';
 import { Server } from 'http';
 import { expect } from 'chai';
 import { NewUser } from '../../features/user/models/auth';
@@ -18,6 +22,13 @@ describe('user routes', () => {
     server.close(done);
   });
   describe('GET users', () => {
+    const repositoryModule = require('../../features/user/repositories');
+    let repositoryStub: SinonStub;
+
+    afterEach(() => {
+      repositoryStub?.restore();
+    });
+
     it('should return users from db.', async () => {
       const users = [makeUser({ id: 0 }), makeUser({ id: 1 })];
       const usersDto = [makeUserDto({ id: 0 }), makeUserDto({ id: 1 })];
@@ -30,6 +41,37 @@ describe('user routes', () => {
         .expect(200)
         .expect((res) => {
           expect(res.body).to.be.deep.equal(usersDto);
+        });
+    });
+
+    it('should return users having given email, first and last name if query params are specified.', async () => {
+      const email = 'email@email.com';
+      const firstName = 'Bob';
+      const lastName = 'Smith';
+      const usersDto = [makeUserDto({ id: 0, email, firstName, lastName })];
+      const dbClient = makeDBClient();
+      const findUsersStub = stub().returns([
+        makeUser({ id: 0, email, firstName, lastName }),
+      ]);
+      repositoryStub = stub(repositoryModule, 'makeUsersRepository').callsFake(
+        makeFakeUsersRepositoryFactory({
+          find: findUsersStub,
+        })
+      );
+
+      server = await makeServer(dbClient);
+
+      return request(server)
+        .get('/users')
+        .query({ email, firstName, lastName })
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).to.be.deep.equal(usersDto);
+          expect(findUsersStub).to.have.been.calledWith({
+            email,
+            firstName,
+            lastName,
+          });
         });
     });
   });
