@@ -1,13 +1,21 @@
 import { UsersRepository } from '../repositories';
 import { RequestHandler } from 'express';
 import { makeUserDto } from '../dtos/user';
-import { validateUserFilters } from '../validators';
+import { validateGetUsersRequest } from '../validators';
+import { makePagedResult } from '../../../utils/paging';
+import { getCurrentUrl } from '../../../utils/url';
 
 export const makeGetUsersHandler = (
   usersRepository: UsersRepository
 ): RequestHandler => async (req, res, next) => {
   try {
-    const { email, firstName, lastName } = await validateUserFilters(req);
+    const {
+      email,
+      firstName,
+      lastName,
+      page,
+      pageSize,
+    } = await validateGetUsersRequest(req);
 
     const users = (
       await usersRepository.find({
@@ -17,7 +25,9 @@ export const makeGetUsersHandler = (
       })
     ).map(makeUserDto);
 
-    res.status(200).json(users);
+    res
+      .status(200)
+      .json(makePagedResult(users, { page, pageSize }, getCurrentUrl(req)));
   } catch (error) {
     next(error);
   }
