@@ -19,7 +19,7 @@ export const initializeAuthentication = (
   });
   passport.deserializeUser<User, number>(async (id, done) => {
     try {
-      const user = await userRepository.findOne('id', id);
+      const user = await userRepository.findOne({ id });
       done(null, user);
     } catch (error) {
       done(error);
@@ -30,7 +30,7 @@ export const initializeAuthentication = (
       { usernameField: 'email' },
       async (email, password, done) => {
         try {
-          const user = await userRepository.findOne('email', email);
+          const user = await userRepository.findOne({ email });
 
           if (!user || !compareHash(user.password, password)) {
             return done(null, false, { message: 'Wrong username or password' });
@@ -51,7 +51,6 @@ export const initializeAuthentication = (
       saveUninitialized: false,
       secret: config.get('authentication.secret'),
       cookie: {
-        domain: config.get('appConfig.host'),
         httpOnly: true,
         signed: true,
         secure: process.env.NODE_ENV === 'production' ? true : false,

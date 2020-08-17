@@ -52,6 +52,19 @@ export const makeUsersRoutes = (client: DBClient) => {
    *  get:
    *    tags: [Users]
    *    description: Use to request all users
+   *    parameters:
+   *      - in: query
+   *        name: email
+   *        type: string
+   *        description: Email filter
+   *      - in: query
+   *        name: firstName
+   *        type: string
+   *        description: First name filter
+   *      - in: query
+   *        name: lastName
+   *        type: string
+   *        description: Last name filter
    *    responses:
    *      '200':
    *        description: Successfully fetched users
