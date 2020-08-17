@@ -90,7 +90,7 @@ export const makeAuthRoutes = (client: DBClient) => {
    *    tags: [Auth]
    *    description: Logs the user in
    *    parameters:
-   *      - credentials: credentials
+   *      - name: credentials
    *        in: body
    *        required: true
    *        type: string
