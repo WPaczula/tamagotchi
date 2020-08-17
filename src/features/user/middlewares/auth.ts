@@ -8,7 +8,6 @@ import { User } from '../models/user';
 import { UsersRepository } from '../repositories';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { CompareHashFunction } from '../utils/hash';
-import { AuthenticatedRequest } from '../types/request';
 
 export const initializeAuthentication = (
   app: Express,
