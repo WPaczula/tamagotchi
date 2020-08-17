@@ -1,9 +1,10 @@
 import { Router } from 'express';
-import { makeRegisterHandler } from '../controllers';
+import { makeRegisterHandler, makeLoginHandler } from '../controllers';
 import { DBClient } from '../../../database';
 import { makeUsersRepository } from '../repositories';
 import { makeNewUserFactory } from '../models/auth';
 import { hash } from '../utils/hash';
+import passport from 'passport';
 
 /**
  * @swagger
@@ -39,6 +40,19 @@ import { hash } from '../utils/hash';
  *         min: 2
  *         max: 255
  *         type: string
+ *   Credentials:
+ *      type: object
+ *      required:
+ *        - email
+ *        - password
+ *      properties:
+ *        email:
+ *         type: string
+ *         example: test@test.com
+ *         format: email
+ *        password:
+ *         type: string
+ *         example: password123
  */
 export const makeAuthRoutes = (client: DBClient) => {
   const usersRepository = makeUsersRepository(client);
@@ -68,6 +82,27 @@ export const makeAuthRoutes = (client: DBClient) => {
     '/register',
     makeRegisterHandler(usersRepository, newUserFactory)
   );
+
+  /**
+   * @swagger
+   * /login:
+   *  post:
+   *    tags: [Auth]
+   *    description: Logs the user in
+   *    parameters:
+   *      - credentials: credentials
+   *        in: body
+   *        required: true
+   *        type: string
+   *        schema:
+   *          $ref: '#/definitions/Credentials'
+   *    responses:
+   *      '204':
+   *        description: Successfully registered
+   *      '401':
+   *        description: Wrong username or password
+   */
+  router.post('/login', passport.authenticate('local'), makeLoginHandler());
 
   return router;
 };

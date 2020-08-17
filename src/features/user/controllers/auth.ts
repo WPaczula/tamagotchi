@@ -23,3 +23,7 @@ export const makeRegisterHandler = (
     next(error);
   }
 };
+
+export const makeLoginHandler = (): RequestHandler => (req, res) => {
+  res.status(204).end();
+};

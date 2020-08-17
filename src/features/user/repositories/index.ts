@@ -1,12 +1,12 @@
 import { DBClient } from '../../../database';
-import { IUser } from '../models/user';
-import { INewUser } from '../models/auth';
+import { User } from '../models/user';
+import { NewUser } from '../models/auth';
 
 export const makeUsersRepository = (client: DBClient) => {
   const repository = {
-    getUsers: async (): Promise<IUser[]> => {
+    getUsers: async (): Promise<User[]> => {
       const users = (
-        await client.query<IUser>(`
+        await client.query<User>(`
           SELECT u.id, u.email, u.password, u.firstName, u.lastName 
           FROM users u
         `)
@@ -18,7 +18,7 @@ export const makeUsersRepository = (client: DBClient) => {
     checkIfEmailIsInUse: async (email: string): Promise<boolean> => {
       const isEmailInUse =
         (
-          await client.query<IUser>(
+          await client.query<User>(
             `
             SELECT 1
               FROM users u
@@ -31,7 +31,7 @@ export const makeUsersRepository = (client: DBClient) => {
       return isEmailInUse;
     },
 
-    addUser: async (user: INewUser): Promise<void> => {
+    addUser: async (user: NewUser): Promise<void> => {
       await client.query(
         `
         INSERT INTO users (email, password, lastName, firstName) 
@@ -39,6 +39,21 @@ export const makeUsersRepository = (client: DBClient) => {
         `,
         [user.email, user.password, user.lastName, user.firstName]
       );
+    },
+
+    findOne: async <T>(field: keyof User, value: T): Promise<User> => {
+      const user = (
+        await client.query(
+          `
+        SELECT u.id, u.email, u.password, u.firstName, u.lastName 
+        FROM users u
+        WHERE u.${field} = $1
+      `,
+          [value]
+        )
+      ).rows[0];
+
+      return user;
     },
   };
 

@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { makeGetUsersHandler } from '../controllers';
 import { DBClient } from '../../../database';
 import { makeUsersRepository } from '../repositories';
+import { authenticated } from '../middlewares/auth';
 
 /**
  * @swagger
@@ -59,7 +60,7 @@ export const makeUsersRoutes = (client: DBClient) => {
    *          items:
    *            $ref: '#/definitions/User'
    */
-  router.get('/', makeGetUsersHandler(usersRepository));
+  router.get('/', authenticated, makeGetUsersHandler(usersRepository));
 
   return router;
 };

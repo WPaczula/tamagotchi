@@ -7,6 +7,9 @@ import cors from 'cors';
 import { errorHandler, notFound } from './middlewares';
 import { makeUsersRoutes, makeAuthRoutes } from './features/user/routes';
 import initializeSwagger from './utils/initialize-swagger';
+import { initializeAuthentication } from './features/user/middlewares/auth';
+import { makeUsersRepository } from './features/user/repositories';
+import { compareHash } from './features/user/utils/hash';
 
 const makeServer = async (dbClient: DBClient) => {
   const app = express();
@@ -18,6 +21,8 @@ const makeServer = async (dbClient: DBClient) => {
   app.use(morgan('common'));
   app.use(helmet());
   app.use(cors());
+
+  initializeAuthentication(app, makeUsersRepository(dbClient), compareHash);
 
   // add routes
   app.get('/', (req, res) => {

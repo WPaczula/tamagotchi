@@ -1,7 +1,7 @@
 import { validateNewUser } from '../validators';
 import { HashFunction } from '../utils/hash';
 
-export interface INewUser {
+export interface NewUser {
   readonly email: string;
   readonly password: string;
   readonly firstName?: string;
@@ -13,7 +13,7 @@ export const makeNewUserFactory = (hash: HashFunction) => async (
   password: string,
   firstName?: string,
   lastName?: string
-): Promise<INewUser> => {
+): Promise<NewUser> => {
   const userData = await validateNewUser({
     email,
     password,

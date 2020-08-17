@@ -1,10 +1,14 @@
 import request from 'supertest';
 import makeServer from '../../app';
 import makeDBClient from '../factory/db-client';
-import { makeUser } from '../factory/user';
+import { makeUser, makeUserDto } from '../factory/user';
 import { Server } from 'http';
 import { expect } from 'chai';
-import { INewUser } from '../../features/user/models/auth';
+import { NewUser } from '../../features/user/models/auth';
+import { stub } from 'sinon';
+
+const authModule = require('../../features/user/middlewares/auth');
+stub(authModule, 'authenticated').callsFake((req, res, next) => next());
 
 describe('user routes', () => {
   let server: Server;
@@ -15,6 +19,7 @@ describe('user routes', () => {
   describe('GET users', () => {
     it('should return users from db.', async () => {
       const users = [makeUser({ id: 0 }), makeUser({ id: 1 })];
+      const usersDto = [makeUserDto({ id: 0 }), makeUserDto({ id: 1 })];
       const dbClient = makeDBClient({ queryRows: users });
 
       server = await makeServer(dbClient);
@@ -23,7 +28,7 @@ describe('user routes', () => {
         .get('/users')
         .expect(200)
         .expect((res) => {
-          expect(res.body).to.be.deep.equal(users);
+          expect(res.body).to.be.deep.equal(usersDto);
         });
     });
   });
@@ -33,7 +38,7 @@ describe('user routes', () => {
       const email = 'email@email.com';
       const users = [makeUser({ email })];
       const dbClient = makeDBClient({ queryRows: users });
-      const newUser: INewUser = { email, password: 'password' };
+      const newUser: NewUser = { email, password: 'password' };
 
       server = await makeServer(dbClient);
 
@@ -48,7 +53,7 @@ describe('user routes', () => {
 
     it('should return 201 - created if user was successfuly created.', async () => {
       const dbClient = makeDBClient({ queryRows: [] });
-      const newUser: INewUser = {
+      const newUser: NewUser = {
         email: 'other-email@email.com',
         password: 'password',
       };

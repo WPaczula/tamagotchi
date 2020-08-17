@@ -14,5 +14,9 @@
       "servers": ["http://0.0.0.0:3000"]
     },
     "apis": ["features/**/routes/*.ts"]
+  },
+  "authentication": {
+    "secret": "vBq3uUqNUwhKmPWypYuHgcUBvRcL72fn",
+    "ttl": 8
   }
 }
