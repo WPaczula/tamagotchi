@@ -74,7 +74,18 @@ export const makeUsersRepository = (client: DBClient) => {
         throw new Error('Expected single user but found multiple entries');
       }
 
-      return users[0];
+      return Object.freeze(users[0]);
+    },
+
+    updateUser: async (user: User): Promise<void> => {
+      await client.query(
+        `
+        UPDATE users
+        SET email = $1, password = $2, firstName = $3, lastName = $4
+        WHERE id = $5
+      `,
+        [user.email, user.password, user.firstName, user.lastName, user.id]
+      );
     },
   };
 

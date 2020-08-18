@@ -1,8 +1,9 @@
 import { Router } from 'express';
-import { makeGetUsersHandler } from '../controllers';
+import { makeGetUsersHandler, makeUpdateUserHandler } from '../controllers';
 import { DBClient } from '../../../database';
 import { makeUsersRepository } from '../repositories';
 import { authenticated } from '../middlewares/auth';
+import { hash } from '../utils/hash';
 
 /**
  * @swagger
@@ -41,6 +42,19 @@ import { authenticated } from '../middlewares/auth';
  *         min: 2
  *         max: 255
  *         type: string
+ *   UserPatch:
+ *     type: object
+ *     properties:
+ *       op:
+ *         type: string
+ *         example: replace
+ *       path:
+ *         type: string
+ *         example: /firstName
+ *       value:
+ *         type: string
+ *         example: Bob
+ *
  */
 export const makeUsersRoutes = (client: DBClient) => {
   const usersRepository = makeUsersRepository(client);
@@ -92,5 +106,46 @@ export const makeUsersRoutes = (client: DBClient) => {
    */
   router.get('/', authenticated, makeGetUsersHandler(usersRepository));
 
+  /**
+   * @swagger
+   * /users:
+   *  get:
+   *    tags: [Users]
+   *    description: Use to update a user
+   *    parameters:
+   *      - in: path
+   *        name: id
+   *        type: integer
+   *      - in: body
+   *        name: patch
+   *        type: array
+   *        items:
+   *          $ref: '#/definitions/UserPatch'
+   *    responses:
+   *      '200':
+   *        description: Successfully patched user
+   *        schema:
+   *          type: object
+   *          properties:
+   *            members:
+   *              type: array
+   *              items:
+   *                $ref: '#/definitions/User'
+   *            totalCount:
+   *              type: integer
+   *            prevPage:
+   *              type: string
+   *            nextPage:
+   *              type: string
+   *      '404':
+   *        description: User not found
+   *      '400':
+   *        description: Invalid patch
+   */
+  router.patch(
+    '/:id',
+    authenticated,
+    makeUpdateUserHandler(usersRepository, hash)
+  );
   return router;
 };

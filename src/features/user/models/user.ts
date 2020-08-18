@@ -8,6 +8,6 @@ export interface User {
   readonly id: number;
   readonly email: string;
   readonly password: string;
-  readonly firstName?: string;
-  readonly lastName?: string;
+  readonly firstName: string | null;
+  readonly lastName: string | null;
 }

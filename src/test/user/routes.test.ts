@@ -42,7 +42,6 @@ describe('user routes', () => {
         .expect(200)
         .expect((res) => {
           const { totalCount, members, prevPage, nextPage } = res.body;
-          console.log(res.body);
           expect(members).to.be.deep.equal(usersDto);
           expect(totalCount).to.equal(users.length);
           expect(prevPage).to.be.undefined;
@@ -195,6 +194,134 @@ describe('user routes', () => {
       server = await makeServer(dbClient);
 
       return request(server).post('/login').send(credentials).expect(401);
+    });
+  });
+
+  describe('PATCH users/id', () => {
+    const repositoryModule = require('../../features/user/repositories');
+    const hashModule = require('../../features/user/utils/hash');
+    let repositoryStub: SinonStub;
+    let hashStub: SinonStub;
+
+    afterEach(() => {
+      repositoryStub?.restore();
+      hashStub?.restore();
+    });
+
+    it('should update the user if patch is correct and the user exists.', async () => {
+      const id = 0;
+      const editedUser = makeUser({ id, lastName: null, firstName: 'John' });
+      const updateUserStub = stub();
+      repositoryStub = stub(repositoryModule, 'makeUsersRepository').callsFake(
+        makeFakeUsersRepositoryFactory({
+          findOne: () => Promise.resolve(editedUser),
+          updateUser: updateUserStub,
+        })
+      );
+      const patch = [
+        {
+          op: 'remove',
+          path: '/firstName',
+        },
+        {
+          op: 'add',
+          path: '/lastName',
+          value: 'New Last Name',
+        },
+        {
+          op: 'replace',
+          path: '/email',
+          value: 'new@email.com',
+        },
+      ];
+
+      server = await makeServer(makeDBClient());
+
+      return request(server)
+        .patch(`/users/${id}`)
+        .send(patch)
+        .expect(204)
+        .expect(() => {
+          expect(updateUserStub).to.have.been.calledWith({
+            id: editedUser.id,
+            email: 'new@email.com',
+            password: editedUser.password,
+            lastName: 'New Last Name',
+          });
+        });
+    });
+
+    it('should be able to update the password hash.', async () => {
+      const id = 0;
+      const editedUser = makeUser({ id, password: 'hash123123123123' });
+      const updateUserStub = stub();
+      repositoryStub = stub(repositoryModule, 'makeUsersRepository').callsFake(
+        makeFakeUsersRepositoryFactory({
+          findOne: () => Promise.resolve(editedUser),
+          updateUser: updateUserStub,
+        })
+      );
+      hashStub = stub(hashModule, 'hash').returns('new-hashed-password');
+      const patch = [
+        {
+          op: 'replace',
+          path: '/password',
+          value: 'new-password',
+        },
+      ];
+
+      server = await makeServer(makeDBClient());
+
+      return request(server)
+        .patch(`/users/${id}`)
+        .send(patch)
+        .expect(204)
+        .expect(() => {
+          expect(updateUserStub).to.have.been.calledWith({
+            ...editedUser,
+            password: 'new-hashed-password',
+          });
+        });
+    });
+
+    it('should be return 404 if the user is not found.', async () => {
+      repositoryStub = stub(repositoryModule, 'makeUsersRepository').callsFake(
+        makeFakeUsersRepositoryFactory({
+          findOne: () => Promise.resolve(undefined),
+        })
+      );
+      const patch = [
+        {
+          op: 'replace',
+          path: '/email',
+          value: 'new-email@mail.com',
+        },
+      ];
+
+      server = await makeServer(makeDBClient());
+
+      return request(server).patch(`/users/404`).send(patch).expect(404);
+    });
+
+    it('should be return 400 if id was updated.', async () => {
+      const id = 0;
+      const editedUser = makeUser({ id });
+      repositoryStub = stub(repositoryModule, 'makeUsersRepository').callsFake(
+        makeFakeUsersRepositoryFactory({
+          findOne: () => Promise.resolve(editedUser),
+        })
+      );
+      const patch = [
+        {
+          op: 'replace',
+          path: '/id',
+          value: 1000,
+        },
+      ];
+
+      server = await makeServer(makeDBClient());
+
+      return request(server).patch(`/users/${id}`).send(patch).expect(400);
     });
   });
 });

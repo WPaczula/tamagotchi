@@ -8,7 +8,7 @@ export interface UserDto {
 }
 export const makeUserDto = (user: User): UserDto => ({
   id: user.id,
-  firstName: user.firstName,
-  lastName: user.lastName,
+  firstName: user.firstName ?? undefined,
+  lastName: user.lastName ?? undefined,
   email: user.email,
 });

@@ -10,7 +10,7 @@ export const makeUser = (opts: Partial<User> = {}): User => {
     email = 'test@test.com',
     firstName = 'bob',
     lastName = 'smith',
-    password = 'hash',
+    password = 'hash912580985210uf90sa0ufu9weqj90j9021j90j',
   } = opts;
 
   return Object.freeze({
@@ -47,6 +47,7 @@ export const makeFakeUsersRepositoryFactory = (
     checkIfEmailIsInUse = stub().returns(Promise.resolve(false)),
     find = stub().returns(Promise.resolve([])),
     findOne = stub().returns(Promise.resolve()),
+    updateUser = stub().returns(Promise.resolve()),
   } = opts;
 
   return (dbClient: DBClient): UsersRepository => ({
@@ -55,5 +56,6 @@ export const makeFakeUsersRepositoryFactory = (
     checkIfEmailIsInUse,
     find,
     findOne,
+    updateUser,
   });
 };
