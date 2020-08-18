@@ -54,6 +54,14 @@ export const makeUsersRoutes = (client: DBClient) => {
    *    description: Use to request all users
    *    parameters:
    *      - in: query
+   *        name: page
+   *        type: integer
+   *        description: Page number
+   *      - in: query
+   *        name: pageSize
+   *        type: integer
+   *        description: Page size
+   *      - in: query
    *        name: email
    *        type: string
    *        description: Email filter
@@ -69,9 +77,18 @@ export const makeUsersRoutes = (client: DBClient) => {
    *      '200':
    *        description: Successfully fetched users
    *        schema:
-   *          type: array
-   *          items:
-   *            $ref: '#/definitions/User'
+   *          type: object
+   *          properties:
+   *            members:
+   *              type: array
+   *              items:
+   *                $ref: '#/definitions/User'
+   *            totalCount:
+   *              type: integer
+   *            prevPage:
+   *              type: string
+   *            nextPage:
+   *              type: string
    */
   router.get('/', authenticated, makeGetUsersHandler(usersRepository));
 
