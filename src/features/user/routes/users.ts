@@ -109,7 +109,7 @@ export const makeUsersRoutes = (client: DBClient) => {
   /**
    * @swagger
    * /users:
-   *  get:
+   *  patch:
    *    tags: [Users]
    *    description: Use to update a user
    *    parameters:
@@ -124,23 +124,12 @@ export const makeUsersRoutes = (client: DBClient) => {
    *    responses:
    *      '200':
    *        description: Successfully patched user
-   *        schema:
-   *          type: object
-   *          properties:
-   *            members:
-   *              type: array
-   *              items:
-   *                $ref: '#/definitions/User'
-   *            totalCount:
-   *              type: integer
-   *            prevPage:
-   *              type: string
-   *            nextPage:
-   *              type: string
    *      '404':
    *        description: User not found
    *      '400':
    *        description: Invalid patch
+   *      '409':
+   *        description: User already exist
    */
   router.patch(
     '/:id',
