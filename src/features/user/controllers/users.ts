@@ -59,6 +59,14 @@ export const makeUpdateUserHandler = (
       throw new Error('Invalid query');
     }
 
+    const userAlreadyExist = await usersRepository.checkIfEmailIsInUse(
+      updatedUser.email
+    );
+    if (userAlreadyExist) {
+      res.status(409);
+      throw new Error('Email already in use');
+    }
+
     if (updatedUser.password !== user.password) {
       updatedUser = {
         ...updatedUser,

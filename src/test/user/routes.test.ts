@@ -300,7 +300,7 @@ describe('user routes', () => {
 
       server = await makeServer(makeDBClient());
 
-      return request(server).patch(`/users/404`).send(patch).expect(404);
+      return request(server).patch('/users/404').send(patch).expect(404);
     });
 
     it('should be return 400 if id was updated.', async () => {
@@ -322,6 +322,28 @@ describe('user routes', () => {
       server = await makeServer(makeDBClient());
 
       return request(server).patch(`/users/${id}`).send(patch).expect(400);
+    });
+
+    it('should be return 400 if id was updated.', async () => {
+      const id = 0;
+      const editedUser = makeUser({ id });
+      repositoryStub = stub(repositoryModule, 'makeUsersRepository').callsFake(
+        makeFakeUsersRepositoryFactory({
+          findOne: () => Promise.resolve(editedUser),
+          checkIfEmailIsInUse: () => Promise.resolve(true),
+        })
+      );
+      const patch = [
+        {
+          op: 'replace',
+          path: '/email',
+          value: 'existing@email.com',
+        },
+      ];
+
+      server = await makeServer(makeDBClient());
+
+      return request(server).patch(`/users/${id}`).send(patch).expect(409);
     });
   });
 
