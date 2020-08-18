@@ -1,5 +1,9 @@
 import { Router } from 'express';
-import { makeGetUsersHandler, makeUpdateUserHandler } from '../controllers';
+import {
+  makeGetUsersHandler,
+  makeUpdateUserHandler,
+  makeDeleteUserHandler,
+} from '../controllers';
 import { DBClient } from '../../../database';
 import { makeUsersRepository } from '../repositories';
 import { authenticated } from '../middlewares/auth';
@@ -147,5 +151,24 @@ export const makeUsersRoutes = (client: DBClient) => {
     authenticated,
     makeUpdateUserHandler(usersRepository, hash)
   );
+
+  /**
+   * @swagger
+   * /users:
+   *  delete:
+   *    tags: [Users]
+   *    description: Delete a user
+   *    parameters:
+   *      - in: path
+   *        name: id
+   *        type: integer
+   *    responses:
+   *      '204':
+   *        description: Successfully deleted user
+   *      '404':
+   *        description: User not found
+   */
+  router.delete('/:id', authenticated, makeDeleteUserHandler(usersRepository));
+
   return router;
 };

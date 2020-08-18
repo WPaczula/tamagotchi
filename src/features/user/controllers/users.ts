@@ -74,3 +74,25 @@ export const makeUpdateUserHandler = (
     next(error);
   }
 };
+
+export const makeDeleteUserHandler = (
+  usersRepository: UsersRepository
+): RequestHandler => async (req, res, next) => {
+  try {
+    const id = await validateUserParams(req);
+
+    const user = await usersRepository.findOne({
+      id,
+    });
+    if (!user) {
+      res.status(404);
+      throw new Error('User does not exist');
+    }
+
+    usersRepository.deleteUser(id);
+
+    res.status(204).end();
+  } catch (error) {
+    next(error);
+  }
+};

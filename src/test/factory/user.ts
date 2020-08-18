@@ -48,6 +48,7 @@ export const makeFakeUsersRepositoryFactory = (
     find = stub().returns(Promise.resolve([])),
     findOne = stub().returns(Promise.resolve()),
     updateUser = stub().returns(Promise.resolve()),
+    deleteUser = stub().returns(Promise.resolve()),
   } = opts;
 
   return (dbClient: DBClient): UsersRepository => ({
@@ -57,5 +58,6 @@ export const makeFakeUsersRepositoryFactory = (
     find,
     findOne,
     updateUser,
+    deleteUser,
   });
 };

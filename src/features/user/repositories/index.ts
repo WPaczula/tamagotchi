@@ -87,6 +87,16 @@ export const makeUsersRepository = (client: DBClient) => {
         [user.email, user.password, user.firstName, user.lastName, user.id]
       );
     },
+
+    deleteUser: async (id: number): Promise<void> => {
+      await client.query(
+        `
+          DELETE FROM users u
+          WHERE u.id = $1
+        `,
+        [id]
+      );
+    },
   };
 
   return Object.freeze(repository);

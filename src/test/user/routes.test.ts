@@ -324,4 +324,49 @@ describe('user routes', () => {
       return request(server).patch(`/users/${id}`).send(patch).expect(400);
     });
   });
+
+  describe('DELETE users/:id', () => {
+    const repositoryModule = require('../../features/user/repositories');
+    let repositoryStub: SinonStub;
+
+    afterEach(() => {
+      repositoryStub?.restore();
+    });
+
+    it('should delete the user and return 204 if user exists.', async () => {
+      const id = 0;
+      const deletedUser = makeUser({ id });
+      const deleteUserStub = stub();
+      repositoryStub = stub(repositoryModule, 'makeUsersRepository').callsFake(
+        makeFakeUsersRepositoryFactory({
+          findOne: () => Promise.resolve(deletedUser),
+          deleteUser: deleteUserStub,
+        })
+      );
+
+      server = await makeServer(makeDBClient());
+
+      return request(server)
+        .delete(`/users/${id}`)
+        .expect(204)
+        .expect(() => {
+          expect(deleteUserStub).to.have.been.calledWith(id);
+        });
+    });
+
+    it('should delete the user and return 404 if user does not exist.', async () => {
+      const id = 0;
+      const deleteUserStub = stub();
+      repositoryStub = stub(repositoryModule, 'makeUsersRepository').callsFake(
+        makeFakeUsersRepositoryFactory({
+          findOne: () => Promise.resolve(undefined),
+          deleteUser: deleteUserStub,
+        })
+      );
+
+      server = await makeServer(makeDBClient());
+
+      return request(server).delete(`/users/${id}`).expect(404);
+    });
+  });
 });
