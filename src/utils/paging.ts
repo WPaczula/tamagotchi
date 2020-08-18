@@ -29,7 +29,7 @@ export const makePagedResult = <T>(
   let nextPage;
 
   const hasPrevPage = page > 0;
-  const hasNextPage = page * pageSize < array.length;
+  const hasNextPage = (page + 1) * pageSize < array.length;
 
   if (hasPrevPage) {
     prevPage = new URL(originalUrl);

@@ -38,9 +38,15 @@ describe('user routes', () => {
 
       return request(server)
         .get('/users')
+        .query({ page: 0, pageSize: 50 })
         .expect(200)
         .expect((res) => {
-          expect(res.body).to.be.deep.equal(usersDto);
+          const { totalCount, members, prevPage, nextPage } = res.body;
+          console.log(res.body);
+          expect(members).to.be.deep.equal(usersDto);
+          expect(totalCount).to.equal(users.length);
+          expect(prevPage).to.be.undefined;
+          expect(nextPage).to.be.undefined;
         });
     });
 
@@ -63,16 +69,48 @@ describe('user routes', () => {
 
       return request(server)
         .get('/users')
-        .query({ email, firstName, lastName })
+        .query({ email, firstName, lastName, page: 0, pageSize: 50 })
         .expect(200)
         .expect((res) => {
-          expect(res.body).to.be.deep.equal(usersDto);
+          const { totalCount, members } = res.body;
+          expect(members).to.be.deep.equal(usersDto);
+          expect(totalCount).to.equal(usersDto.length);
           expect(findUsersStub).to.have.been.calledWith({
             email,
             firstName,
             lastName,
           });
         });
+    });
+
+    it('should add urls to prev and next pages when there are records for those pages.', async () => {
+      const urlModule = require('../../utils/url');
+      const url = 'http://server.com/users?pageSize=2&page=1';
+      const getCurrentUrlStub = stub(urlModule, 'getCurrentUrl').returns(url);
+      const users = Array.from({ length: 6 }).map((_, i) =>
+        makeUser({ id: i })
+      );
+      const usersDto = [makeUserDto({ id: 2 }), makeUserDto({ id: 3 })];
+      const dbClient = makeDBClient({ queryRows: users });
+
+      server = await makeServer(dbClient);
+
+      return request(server)
+        .get('/users')
+        .query({ page: 1, pageSize: 2 })
+        .expect(200)
+        .expect((res) => {
+          const { totalCount, members, prevPage, nextPage } = res.body;
+          expect(members).to.be.deep.equal(usersDto);
+          expect(totalCount).to.equal(users.length);
+          expect(prevPage).to.equal(
+            'http://server.com/users?pageSize=2&page=0'
+          );
+          expect(nextPage).to.equal(
+            'http://server.com/users?pageSize=2&page=2'
+          );
+        })
+        .then(() => getCurrentUrlStub.restore());
     });
   });
 
