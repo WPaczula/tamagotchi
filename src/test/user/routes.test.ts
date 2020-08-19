@@ -12,15 +12,26 @@ import { NewUser } from '../../features/user/models/auth';
 import { stub, SinonStub } from 'sinon';
 import { User } from '../../features/user/models/user';
 
-const authModule = require('../../features/user/middlewares/auth');
-stub(authModule, 'authenticated').callsFake((req, res, next) => next());
-
 describe('user routes', () => {
   let server: Server;
+  let requireAuthenticationStub: SinonStub;
+
+  before(() => {
+    const requireAuthenticationModule = require('../../middlewares/require-authentication');
+    requireAuthenticationStub = stub(
+      requireAuthenticationModule,
+      'requireAuthentication'
+    ).callsFake((req, res, next) => next());
+  });
 
   afterEach((done) => {
     server.close(done);
   });
+
+  after(() => {
+    requireAuthenticationStub.restore();
+  });
+
   describe('GET users', () => {
     const repositoryModule = require('../../features/user/repositories');
     let repositoryStub: SinonStub;

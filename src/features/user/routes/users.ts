@@ -6,7 +6,7 @@ import {
 } from '../controllers';
 import { DBClient } from '../../../database';
 import { makeUsersRepository } from '../repositories';
-import { authenticated } from '../middlewares/auth';
+import { requireAuthentication } from '../../../middlewares';
 import { hash } from '../utils/hash';
 
 /**
@@ -108,7 +108,7 @@ export const makeUsersRoutes = (client: DBClient) => {
    *            nextPage:
    *              type: string
    */
-  router.get('/', authenticated, makeGetUsersHandler(usersRepository));
+  router.get('/', requireAuthentication, makeGetUsersHandler(usersRepository));
 
   /**
    * @swagger
@@ -137,7 +137,7 @@ export const makeUsersRoutes = (client: DBClient) => {
    */
   router.patch(
     '/:id',
-    authenticated,
+    requireAuthentication,
     makeUpdateUserHandler(usersRepository, hash)
   );
 
@@ -157,7 +157,11 @@ export const makeUsersRoutes = (client: DBClient) => {
    *      '404':
    *        description: User not found
    */
-  router.delete('/:id', authenticated, makeDeleteUserHandler(usersRepository));
+  router.delete(
+    '/:id',
+    requireAuthentication,
+    makeDeleteUserHandler(usersRepository)
+  );
 
   return router;
 };

@@ -1,4 +1,4 @@
-import { Express, RequestHandler } from 'express';
+import { Express } from 'express';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import passport from 'passport';
@@ -60,13 +60,4 @@ export const initializeAuthentication = (
   );
   app.use(passport.initialize());
   app.use(passport.session());
-};
-
-export const authenticated: RequestHandler = (req, res, next) => {
-  if (req.user) {
-    next();
-  } else {
-    res.status(401);
-    next(new Error('Not authenticated.'));
-  }
 };
