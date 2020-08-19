@@ -1,6 +1,7 @@
 import { DBClient } from '../../../database';
 import { User } from '../models/user';
 import { NewUser } from '../models/auth';
+import { findBy } from '../../../utils/find-by';
 
 export const makeUsersRepository = (client: DBClient) => {
   const repository = {
@@ -42,28 +43,15 @@ export const makeUsersRepository = (client: DBClient) => {
     },
 
     find: async function (user: Partial<User> = {}): Promise<User[]> {
-      const predicateFields = (Object.keys(user) as (keyof User)[]).filter(
-        (field) => typeof user[field] !== 'undefined'
+      const users = findBy(
+        client,
+        user,
+        `
+        SELECT u.id, u.email, u.password, u.firstName as "firstName", u.lastName as "lastName" 
+        FROM users u
+        `,
+        this.getUsers
       );
-      const predicateValues = predicateFields.map((field) => user[field]);
-
-      if (predicateFields.length === 0) {
-        return this.getUsers();
-      }
-
-      let sql = `
-      SELECT u.id, u.email, u.password, u.firstName as "firstName", u.lastName as "lastName" 
-      FROM users u
-      WHERE `;
-      // build the predicate
-      predicateFields.forEach((field, i) => {
-        const isLast = i === predicateFields.length - 1;
-        sql = sql + `u.${field}=$${i + 1}`;
-        sql = sql + (isLast ? ';' : ' and ');
-      });
-
-      const users = (await client.query(sql, predicateValues)).rows;
-
       return users;
     },
 

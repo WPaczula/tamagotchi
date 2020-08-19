@@ -11,6 +11,13 @@ export const makeCreatePetTypeHandler = (
   const { name } = req.body;
 
   try {
+    const petType = await petTypesRepository.findOne({ name });
+    console.error('PET TYPE', petType);
+    if (petType) {
+      res.status(409);
+      throw new Error(`Pet type ${name} already exists`);
+    }
+
     const newPetType = await makePetType(name);
     await petTypesRepository.createPetType(newPetType);
     res.status(201).end();

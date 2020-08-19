@@ -72,11 +72,31 @@ describe('user routes', () => {
 
       return request(server)
         .post('/petTypes')
-        .send({ name })
+        .send(newPetType)
         .expect(201)
         .expect(() => {
           expect(createPetTypeStub).to.have.been.calledWith(newPetType);
         });
+    });
+
+    it('should return 409 if pet type already exists.', async () => {
+      const dbClient = makeDBClient();
+      const name = 'Capybara';
+      const petType = createPetType({ name });
+      const newPetType = createNewPetType({ name });
+      const findPetTypeStub = stub().returns(Promise.resolve(petType));
+      repositoryStub = stub(
+        repositoryModule,
+        'makePetTypesRepository'
+      ).callsFake(
+        makeFakePetTypesRepositoryFactory({
+          findOne: findPetTypeStub,
+        })
+      );
+
+      server = await makeServer(dbClient);
+
+      return request(server).post('/petTypes').send(newPetType).expect(409);
     });
   });
 

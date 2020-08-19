@@ -19,7 +19,9 @@ const makeServer = async (dbClient: DBClient) => {
 
   // apply middlewares
   app.use(express.json());
-  app.use(morgan('common'));
+  if (process.env.NODE_ENV !== 'test') {
+    app.use(morgan('common'));
+  }
   app.use(helmet());
   app.use(cors());
 
@@ -39,7 +41,9 @@ const makeServer = async (dbClient: DBClient) => {
   const host = config.get('appConfig.host') as string;
   const port = config.get('appConfig.port') as number;
   const server = app.listen(port, host, () => {
-    console.log(`>>> SERVER RUNNING ON http://${host}:${port} <<<`);
+    if (process.env.NODE_ENV !== 'test') {
+      console.log(`>>> SERVER RUNNING ON http://${host}:${port} <<<`);
+    }
   });
 
   return server;
