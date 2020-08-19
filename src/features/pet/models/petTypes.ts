@@ -4,8 +4,8 @@ export interface NewPetType {
   name: string;
 }
 
-interface PetType extends NewPetType {
-  id: string;
+export interface PetType extends NewPetType {
+  id: number;
 }
 
 export const makePetType = async (name: string): Promise<NewPetType> => {

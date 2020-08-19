@@ -1,5 +1,5 @@
 import { DBClient } from '../../../database';
-import { NewPetType } from '../models/petTypes';
+import { NewPetType, PetType } from '../models/petTypes';
 
 export const makePetTypesRepository = (dbClient: DBClient) => {
   const repository = {
@@ -11,6 +11,17 @@ export const makePetTypesRepository = (dbClient: DBClient) => {
       `,
         [newPetType.name]
       );
+    },
+
+    getPetTypes: async (): Promise<PetType[]> => {
+      const petTypes = (
+        await dbClient.query(`
+        SELECT p.id, p.name
+        FROM petTypes p
+      `)
+      ).rows;
+
+      return petTypes;
     },
   };
 

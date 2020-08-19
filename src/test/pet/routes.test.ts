@@ -14,8 +14,9 @@ import { User } from '../../features/user/models/user';
 import {
   makeFakePetTypesRepositoryFactory,
   createNewPetType,
+  createPetType,
 } from '../factory/petTypes';
-import { NewPetType } from '../../features/pet/models/petTypes';
+import { NewPetType, makePetType } from '../../features/pet/models/petTypes';
 
 describe('user routes', () => {
   let server: Server;
@@ -37,14 +38,13 @@ describe('user routes', () => {
     requireAuthenticationStub.restore();
   });
 
-  describe('POST register', () => {
-    const repositoryModule = require('../../features/pet/repositories/petTypes');
-    let repositoryStub: SinonStub;
+  const repositoryModule = require('../../features/pet/repositories/petTypes');
+  let repositoryStub: SinonStub;
 
-    afterEach(() => {
-      repositoryStub?.restore();
-    });
-
+  afterEach(() => {
+    repositoryStub?.restore();
+  });
+  describe('POST petTypes', () => {
     it('should return 400 invalid name is provided.', async () => {
       const name = 'X';
       const dbClient = makeDBClient();
@@ -76,6 +76,45 @@ describe('user routes', () => {
         .expect(201)
         .expect(() => {
           expect(createPetTypeStub).to.have.been.calledWith(newPetType);
+        });
+    });
+  });
+
+  describe('GET petTypes', () => {
+    it('should return 400 if no paging parameters are provided.', async () => {
+      const dbClient = makeDBClient();
+
+      server = await makeServer(dbClient);
+
+      return request(server).get('/petTypes').expect(400);
+    });
+
+    it('should return paged list of pet types if paging query is valid.', async () => {
+      const dbClient = makeDBClient();
+      const petTypes = Array.from({ length: 10 }).map((_, i) =>
+        createPetType({ id: i, name: `Pet-${i}` })
+      );
+      const getPetTypesStub = stub().returns(Promise.resolve(petTypes));
+      repositoryStub = stub(
+        repositoryModule,
+        'makePetTypesRepository'
+      ).callsFake(
+        makeFakePetTypesRepositoryFactory({
+          getPetTypes: getPetTypesStub,
+        })
+      );
+
+      server = await makeServer(dbClient);
+
+      return request(server)
+        .get('/petTypes')
+        .query({ page: 0, pageSize: 50 })
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).to.be.deep.equal({
+            members: petTypes,
+            totalCount: petTypes.length,
+          });
         });
     });
   });
