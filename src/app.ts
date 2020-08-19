@@ -10,6 +10,7 @@ import initializeSwagger from './utils/initialize-swagger';
 import { initializeAuthentication } from './features/user/middlewares/auth';
 import { makeUsersRepository } from './features/user/repositories';
 import { compareHash } from './features/user/utils/hash';
+import { makePetTypeRoutes } from './features/pet/routes';
 
 const makeServer = async (dbClient: DBClient) => {
   const app = express();
@@ -30,6 +31,7 @@ const makeServer = async (dbClient: DBClient) => {
   });
   app.use('/', makeAuthRoutes(dbClient));
   app.use('/users', makeUsersRoutes(dbClient));
+  app.use('/petTypes', makePetTypeRoutes(dbClient));
 
   app.use(notFound);
   app.use(errorHandler);

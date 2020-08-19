@@ -14,4 +14,14 @@ BEGIN
     INSERT INTO users (email, password, lastName, firstName) 
       VALUES ('bob.smith@test.com', 'hash', 'Bob', 'Smith');
   END IF;
-END $$
+END $$;
+
+CREATE TABLE IF NOT EXISTS petTypes(
+  id BIGSERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL, 
+  userId BIGSERIAL, 
+  UNIQUE (name), 
+  FOREIGN KEY (userId)
+    REFERENCES users (id)
+    ON DELETE CASCADE
+);

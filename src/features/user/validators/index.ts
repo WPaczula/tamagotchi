@@ -41,9 +41,9 @@ export const validateUser = async (id: number, user: User): Promise<User> => {
 
 const getUsersValidationSchema = joi
   .object({
-    email: joi.string().email().max(255).optional(),
-    firstName: joi.string().min(2).max(255).optional(),
-    lastName: joi.string().min(2).max(255).optional(),
+    email: joi.string().trim().email().max(255).optional(),
+    firstName: joi.string().trim().min(2).max(255).optional(),
+    lastName: joi.string().trim().min(2).max(255).optional(),
   })
   .concat(pagingValidationSchema);
 export const validateGetUsersRequest = async (
