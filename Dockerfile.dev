@@ -3,11 +3,14 @@ FROM node:14.5-alpine
 ARG port
 ARG registry
 
+# Clear the cache
 # Install all build dependencies
 # Add bash for debugging purposes
-RUN apk update \
-    && apk add --virtual git make postgresql-client \
-    && apk add bash
+RUN rm -rf /var/cache/apk/* \
+    && rm -rf /tmp/* \
+    && apk update \
+    && apk add --virtual --no-cache git make postgresql-client \
+    && apk add --no-cache bash
 
 # Create app directory
 WORKDIR /usr/src/app
