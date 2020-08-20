@@ -7,34 +7,28 @@ export const makePetTypesRepository = (dbClient: DBClient) => {
     createPetType: async (newPetType: NewPetType): Promise<void> => {
       await dbClient.query(
         `
-        INSERT INTO petTypes (name)
+        INSERT INTO pet_types (name)
         VALUES ($1)
       `,
         [newPetType.name]
       );
     },
 
-    getPetTypes: async (): Promise<PetType[]> => {
-      const petTypes = (
-        await dbClient.query(`
-        SELECT p.id, p.name
-        FROM petTypes p
-      `)
-      ).rows;
+    find: async (petType: Partial<PetType> = {}): Promise<PetType[]> => {
+      const petTypes = await findBy(
+        dbClient,
+        petType,
+        `
+          SELECT p.id, p.name
+          FROM pet_types p
+        `
+      );
 
       return petTypes;
     },
 
     findOne: async function (petType: Partial<PetType>): Promise<PetType> {
-      const petTypes = await findBy(
-        dbClient,
-        petType,
-        `
-        SELECT p.id, p.name
-        FROM petTypes p
-      `,
-        this.getPetTypes
-      );
+      const petTypes = await this.find(petType);
 
       if (petTypes.length > 1) {
         throw new Error('Expected single pet type but found multiple entries');

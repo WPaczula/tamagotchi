@@ -42,7 +42,6 @@ export const makeFakeUsersRepositoryFactory = (
   opts: Partial<UsersRepository> = {}
 ) => {
   const {
-    getUsers = stub().returns(Promise.resolve([])),
     addUser = stub().returns(Promise.resolve()),
     checkIfEmailIsInUse = stub().returns(Promise.resolve(false)),
     find = stub().returns(Promise.resolve([])),
@@ -52,7 +51,6 @@ export const makeFakeUsersRepositoryFactory = (
   } = opts;
 
   return (dbClient: DBClient): UsersRepository => ({
-    getUsers,
     addUser,
     checkIfEmailIsInUse,
     find,

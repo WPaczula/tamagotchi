@@ -25,13 +25,13 @@ export const makeFakePetTypesRepositoryFactory = (
 ) => {
   const {
     createPetType = stub().returns(Promise.resolve()),
-    getPetTypes = stub().returns(Promise.resolve([])),
+    find = stub().returns(Promise.resolve([])),
     findOne = stub().returns(Promise.resolve()),
   } = opts;
 
   return (dbClient: DBClient): PetTypesRepository => ({
     createPetType,
-    getPetTypes,
+    find,
     findOne,
   });
 };

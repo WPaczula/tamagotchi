@@ -114,13 +114,13 @@ describe('user routes', () => {
       const petTypes = Array.from({ length: 10 }).map((_, i) =>
         createPetType({ id: i, name: `Pet-${i}` })
       );
-      const getPetTypesStub = stub().returns(Promise.resolve(petTypes));
+      const findStub = stub().returns(Promise.resolve(petTypes));
       repositoryStub = stub(
         repositoryModule,
         'makePetTypesRepository'
       ).callsFake(
         makeFakePetTypesRepositoryFactory({
-          getPetTypes: getPetTypesStub,
+          find: findStub,
         })
       );
 

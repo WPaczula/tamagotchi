@@ -3,8 +3,7 @@ import { DBClient } from '../database';
 export const findBy = async <T>(
   dbClient: DBClient,
   queryOptions: Partial<T>,
-  getAllSql: string,
-  getAll: () => Promise<T[]>
+  getAllSql: string
 ) => {
   const predicateFields = (Object.keys(queryOptions) as (keyof T)[]).filter(
     (field) => typeof queryOptions[field] !== 'undefined'
@@ -12,7 +11,7 @@ export const findBy = async <T>(
   const predicateValues = predicateFields.map((field) => queryOptions[field]);
 
   if (predicateFields.length === 0) {
-    return getAll();
+    return (await dbClient.query(getAllSql)).rows;
   }
 
   let sql = `

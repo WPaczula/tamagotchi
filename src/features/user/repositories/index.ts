@@ -5,17 +5,6 @@ import { findBy } from '../../../utils/find-by';
 
 export const makeUsersRepository = (client: DBClient) => {
   const repository = {
-    getUsers: async (): Promise<User[]> => {
-      const users = (
-        await client.query<User>(`
-          SELECT u.id, u.email, u.password, u.firstName as "firstName", u.lastName as "lastName" 
-          FROM users u
-        `)
-      ).rows;
-
-      return users;
-    },
-
     checkIfEmailIsInUse: async (email: string): Promise<boolean> => {
       const isEmailInUse =
         (
@@ -35,7 +24,7 @@ export const makeUsersRepository = (client: DBClient) => {
     addUser: async (user: NewUser): Promise<void> => {
       await client.query(
         `
-        INSERT INTO users (email, password, lastName, firstName) 
+        INSERT INTO users (email, password, last_name, first_name) 
         VALUES ($1, $2, $3, $4);
         `,
         [user.email, user.password, user.lastName, user.firstName]
@@ -47,10 +36,9 @@ export const makeUsersRepository = (client: DBClient) => {
         client,
         user,
         `
-        SELECT u.id, u.email, u.password, u.firstName as "firstName", u.lastName as "lastName" 
+        SELECT u.id, u.email, u.password, u.first_name as "firstName", u.last_name as "lastName" 
         FROM users u
-        `,
-        this.getUsers
+        `
       );
       return users;
     },

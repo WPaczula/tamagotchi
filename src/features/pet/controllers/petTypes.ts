@@ -31,7 +31,7 @@ export const makeGetPetTypesHandler = (
 ): RequestHandler => async (req, res, next) => {
   try {
     const pagingOptions = await validateGetPetTypes(req);
-    const petTypes = await petTypesRepository.getPetTypes();
+    const petTypes = await petTypesRepository.find();
     const pagedResult = makePagedResult(
       petTypes,
       pagingOptions,
