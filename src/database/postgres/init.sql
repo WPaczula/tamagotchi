@@ -18,10 +18,6 @@ END $$;
 
 CREATE TABLE IF NOT EXISTS petTypes(
   id BIGSERIAL PRIMARY KEY,
-  name VARCHAR(255) NOT NULL, 
-  userId BIGSERIAL, 
-  UNIQUE (name), 
-  FOREIGN KEY (userId)
-    REFERENCES users (id)
-    ON DELETE CASCADE
+  name VARCHAR(255) NOT NULL,  
+  UNIQUE (name)
 );
