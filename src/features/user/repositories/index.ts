@@ -38,7 +38,8 @@ export const makeUsersRepository = (client: DBClient) => {
         `
         SELECT u.id, u.email, u.password, u.first_name as "firstName", u.last_name as "lastName" 
         FROM users u
-        `
+        `,
+        'u'
       );
       return users;
     },

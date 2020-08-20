@@ -3,7 +3,8 @@ import { DBClient } from '../database';
 export const findBy = async <T>(
   dbClient: DBClient,
   queryOptions: Partial<T>,
-  getAllSql: string
+  getAllSql: string,
+  predicateTablePrefix: string
 ) => {
   const predicateFields = (Object.keys(queryOptions) as (keyof T)[]).filter(
     (field) => typeof queryOptions[field] !== 'undefined'
@@ -20,7 +21,7 @@ export const findBy = async <T>(
   // build the predicate
   predicateFields.forEach((field, i) => {
     const isLast = i === predicateFields.length - 1;
-    sql = sql + `u.${field}=$${i + 1}`;
+    sql = sql + `${predicateTablePrefix}.${field}=$${i + 1}`;
     sql = sql + (isLast ? ';' : ' and ');
   });
 

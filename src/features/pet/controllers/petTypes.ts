@@ -8,17 +8,16 @@ import { getCurrentUrl } from '../../../utils/url';
 export const makeCreatePetTypeHandler = (
   petTypesRepository: PetTypesRepository
 ): RequestHandler => async (req, res, next) => {
-  const { name } = req.body;
+  const { name, properties } = req.body;
 
   try {
     const petType = await petTypesRepository.findOne({ name });
-    console.error('PET TYPE', petType);
     if (petType) {
       res.status(409);
       throw new Error(`Pet type ${name} already exists`);
     }
 
-    const newPetType = await makePetType(name);
+    const newPetType = await makePetType(name, properties);
     await petTypesRepository.createPetType(newPetType);
     res.status(201).end();
   } catch (error) {

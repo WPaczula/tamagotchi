@@ -21,3 +21,15 @@ CREATE TABLE IF NOT EXISTS pet_types(
   name VARCHAR(255) NOT NULL,  
   UNIQUE (name)
 );
+
+CREATE TABLE IF NOT EXISTS pet_properties(
+  id BIGSERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  value REAL NOT NULL,
+  weight SMALLINT NOT NULL,
+  value_per_time REAL NOT NULL,
+  pet_type_id BIGINT NOT NULL,
+  CONSTRAINT fk_pet_type
+    FOREIGN KEY (pet_type_id)
+      REFERENCES pet_types(id)
+)
