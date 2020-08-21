@@ -4,7 +4,7 @@ import {
   makeCreatePetTypeHandler,
   makeGetPetTypesHandler,
 } from '../controllers/petTypes';
-import { makePetTypesRepository } from '../repositories/petTypes';
+import { makePetTypesRepository } from '../repositories';
 import { DBClient } from '../../../database';
 
 /**
@@ -17,18 +17,71 @@ import { DBClient } from '../../../database';
 /**
  * @swagger
  * definitions:
- *   NewPetType:
- *     type: object
- *     required:
- *       - name
- *     properties:
- *       name:
+ *    NewPetProperty:
+ *      type: object
+ *      required:
+ *        - name
+ *        - value
+ *        - weight
+ *        - valuePerTime
+ *      properties:
+ *        name:
+ *          type: string
+ *          min: 2
+ *          max: 255
+ *          example: hunger
+ *        value:
+ *          type: number
+ *          min: 1
+ *        weight:
+ *          type: integer
+ *          min: 1
+ *        valuePerTime:
+ *          type: number
+ *          min: 0.001
+ *
+ *    NewPetType:
+ *      type: object
+ *      required:
+ *        - name
+ *      properties:
+ *        name:
  *         type: string
  *         min: 2
  *         max: 255
  *         example: Capybara
+ *        properties:
+ *         type: array
+ *         items:
+ *           $ref: '#/definitions/NewPetProperty'
  *
- *   PetType:
+ *    PetProperty:
+ *      type: object
+ *      required:
+ *        - id
+ *        - name
+ *        - value
+ *        - weight
+ *        - valuePerTime
+ *      properties:
+ *        id:
+ *          type: integer
+ *        name:
+ *          type: string
+ *          min: 2
+ *          max: 255
+ *          example: hunger
+ *        value:
+ *          type: number
+ *          min: 1
+ *        weight:
+ *          type: integer
+ *          min: 1
+ *        valuePerTime:
+ *          type: number
+ *          min: 0.001
+ *
+ *    PetType:
  *     type: object
  *     required:
  *      - id
@@ -41,6 +94,11 @@ import { DBClient } from '../../../database';
  *        min: 2
  *        max: 255
  *        example: Capybara
+ *      properties:
+ *         type: array
+ *         items:
+ *           $ref: '#/definitions/PetProperty'
+ *
  */
 
 export const makePetTypeRoutes = (dbClient: DBClient) => {
