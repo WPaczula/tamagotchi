@@ -8,9 +8,11 @@ import { User } from '../models/user';
 import { UsersRepository } from '../repositories';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { CompareHashFunction } from '../utils/hash';
+import { RedisStore } from 'connect-redis';
 
 export const initializeAuthentication = (
   app: Express,
+  redisStore: RedisStore,
   userRepository: UsersRepository,
   compareHash: CompareHashFunction
 ) => {
@@ -47,12 +49,14 @@ export const initializeAuthentication = (
   app.use(cookieParser(config.get('authentication.secret')));
   app.use(
     session({
+      store: redisStore,
       resave: false,
       saveUninitialized: false,
       secret: config.get('authentication.secret'),
       cookie: {
         httpOnly: true,
         signed: true,
+        sameSite: 'lax',
         secure: process.env.NODE_ENV === 'production' ? true : false,
         expires: expiresIn(config.get<number>('authentication.ttl')),
       },

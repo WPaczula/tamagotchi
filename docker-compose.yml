@@ -8,6 +8,7 @@ services:
       - "3001:3001"
     depends_on:
       - postgres
+      - redis
     environment:
       PORT: 3001
     command: -- ./node_modules/.bin/ts-node-dev index.ts
@@ -21,6 +22,13 @@ services:
       - "5432:5432"
     environment:
       POSTGRES_HOST_AUTH_METHOD: "trust"
+
+  redis:
+    image: redis:6.0.6-alpine
+    restart: always
+    hostname: redis
+    ports:
+      - "6379:6379"
 
 networks:
   default:

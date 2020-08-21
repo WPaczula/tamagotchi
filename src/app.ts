@@ -11,6 +11,7 @@ import { initializeAuthentication } from './features/user/middlewares/auth';
 import { makeUsersRepository } from './features/user/repositories';
 import { compareHash } from './features/user/utils/hash';
 import { makePetTypeRoutes } from './features/pet/routes';
+import { initializeRedis } from './utils/initialize-redis';
 
 const makeServer = async (dbClient: DBClient) => {
   const app = express();
@@ -25,7 +26,13 @@ const makeServer = async (dbClient: DBClient) => {
   app.use(helmet());
   app.use(cors());
 
-  initializeAuthentication(app, makeUsersRepository(dbClient), compareHash);
+  const redisStore = initializeRedis();
+  initializeAuthentication(
+    app,
+    redisStore,
+    makeUsersRepository(dbClient),
+    compareHash
+  );
 
   // add routes
   app.get('/', (req, res) => {
