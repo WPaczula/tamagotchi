@@ -75,11 +75,13 @@ export const makeFakePetTypesRepositoryFactory = (
     createPetType = stub().returns(Promise.resolve()),
     find = stub().returns(Promise.resolve([])),
     findOne = stub().returns(Promise.resolve()),
+    checkIfPropertyExists = stub().returns(Promise.resolve(true)),
   } = opts;
 
   return (dbClient: DBClient): PetTypesRepository => ({
     createPetType,
     find,
     findOne,
+    checkIfPropertyExists,
   });
 };

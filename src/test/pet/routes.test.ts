@@ -10,6 +10,11 @@ import {
   createPetType,
 } from '../factory/petTypes';
 import { NewPetType } from '../../features/pet/models/petTypes';
+import {
+  makeFakePetModifiersRepositoryFactory,
+  createPetModifier,
+} from '../factory/petModifier';
+import { NewPetModifier } from '../../features/pet/models/petModifier';
 
 describe('user routes', () => {
   let server: Server;
@@ -31,12 +36,16 @@ describe('user routes', () => {
     requireAuthenticationStub.restore();
   });
 
-  const repositoryModule = require('../../features/pet/repositories/petTypes');
-  let repositoryStub: SinonStub;
+  const petTypesRepositoryModule = require('../../features/pet/repositories/petTypes');
+  let petTypesRepositoryStub: SinonStub;
+  const petModifiersRepositoryModule = require('../../features/pet/repositories/petModifier');
+  let petModifiersRepositoryStub: SinonStub;
 
   afterEach(() => {
-    repositoryStub?.restore();
+    petTypesRepositoryStub?.restore();
+    petModifiersRepositoryStub?.restore();
   });
+
   describe('POST petTypes', () => {
     it('should return 400 invalid name is provided.', async () => {
       const name = 'X';
@@ -51,8 +60,8 @@ describe('user routes', () => {
       const name = 'Capybara';
       const dbClient = makeDBClient();
       const createPetTypeStub = stub().returns(Promise.resolve());
-      repositoryStub = stub(
-        repositoryModule,
+      petTypesRepositoryStub = stub(
+        petTypesRepositoryModule,
         'makePetTypesRepository'
       ).callsFake(
         makeFakePetTypesRepositoryFactory({
@@ -78,8 +87,8 @@ describe('user routes', () => {
       const petType = createPetType({ name });
       const newPetType = createNewPetType({ name });
       const findPetTypeStub = stub().returns(Promise.resolve(petType));
-      repositoryStub = stub(
-        repositoryModule,
+      petTypesRepositoryStub = stub(
+        petTypesRepositoryModule,
         'makePetTypesRepository'
       ).callsFake(
         makeFakePetTypesRepositoryFactory({
@@ -108,8 +117,8 @@ describe('user routes', () => {
         createPetType({ id: i, name: `Pet-${i}` })
       );
       const findStub = stub().returns(Promise.resolve(petTypes));
-      repositoryStub = stub(
-        repositoryModule,
+      petTypesRepositoryStub = stub(
+        petTypesRepositoryModule,
         'makePetTypesRepository'
       ).callsFake(
         makeFakePetTypesRepositoryFactory({
@@ -129,6 +138,104 @@ describe('user routes', () => {
             totalCount: petTypes.length,
           });
         });
+    });
+
+    describe('POST petModifiers', () => {
+      it('should return 201 if there is a pet property in the app and new set of values is unique.', async () => {
+        const dbClient = makeDBClient();
+        const savePetModifierStub = stub().returns(Promise.resolve());
+        petModifiersRepositoryStub = stub(
+          petModifiersRepositoryModule,
+          'makePetModifiersRepository'
+        ).callsFake(
+          makeFakePetModifiersRepositoryFactory({
+            saveNewPetModifier: savePetModifierStub,
+          })
+        );
+        petTypesRepositoryStub = stub(
+          petTypesRepositoryModule,
+          'makePetTypesRepository'
+        ).callsFake(
+          makeFakePetTypesRepositoryFactory({
+            checkIfPropertyExists: () => Promise.resolve(true),
+          })
+        );
+        const newPetModifier: NewPetModifier = createPetModifier();
+
+        server = await makeServer(dbClient);
+
+        return request(server)
+          .post('/petModifiers')
+          .send(newPetModifier)
+          .expect(201)
+          .expect(() => {
+            expect(savePetModifierStub).to.have.been.calledWith(newPetModifier);
+          });
+      });
+
+      it('should return 400 if there is no pet property in the app.', async () => {
+        const dbClient = makeDBClient();
+        petTypesRepositoryStub = stub(
+          petTypesRepositoryModule,
+          'makePetTypesRepository'
+        ).callsFake(
+          makeFakePetTypesRepositoryFactory({
+            checkIfPropertyExists: () => Promise.resolve(false),
+          })
+        );
+        const property = 'hunger';
+        const newPetModifier: NewPetModifier = createPetModifier({ property });
+
+        server = await makeServer(dbClient);
+
+        return request(server)
+          .post('/petModifiers')
+          .send(newPetModifier)
+          .expect(400)
+          .expect((res) => {
+            expect(res.body.message).to.equal(
+              `Pet property ${property} doesn't exist`
+            );
+          });
+      });
+
+      it('should return 400 if set of pet modifier values already exists in the app.', async () => {
+        const dbClient = makeDBClient();
+        const savePetModifierStub = stub().returns(
+          Promise.reject(
+            new Error(
+              'duplicate key value violates unique constraint "pet_modifier_index"'
+            )
+          )
+        );
+        petModifiersRepositoryStub = stub(
+          petModifiersRepositoryModule,
+          'makePetModifiersRepository'
+        ).callsFake(
+          makeFakePetModifiersRepositoryFactory({
+            saveNewPetModifier: savePetModifierStub,
+          })
+        );
+        petTypesRepositoryStub = stub(
+          petTypesRepositoryModule,
+          'makePetTypesRepository'
+        ).callsFake(
+          makeFakePetTypesRepositoryFactory({
+            checkIfPropertyExists: () => Promise.resolve(true),
+          })
+        );
+        const newPetModifier: NewPetModifier = createPetModifier();
+
+        server = await makeServer(dbClient);
+
+        return request(server)
+          .post('/petModifiers')
+          .send(newPetModifier)
+          .expect(400)
+          .expect((res) => {
+            expect(res.body.message).to.equal(`Pet modifier already exist`);
+          });
+      });
     });
   });
 });
