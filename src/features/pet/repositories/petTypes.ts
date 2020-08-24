@@ -5,7 +5,7 @@ import {
   PetTypeWithPropertyArray,
 } from '../models/petTypes';
 import { findBy } from '../../../utils/find-by';
-import { PetProperty } from '../models/petProperty';
+import { PetProperty, PetPropertyName } from '../models/petProperty';
 
 export const makePetTypesRepository = (dbClient: DBClient) => {
   const repository = {
@@ -103,6 +103,23 @@ export const makePetTypesRepository = (dbClient: DBClient) => {
       }
 
       return petTypes[0];
+    },
+
+    checkIfPropertyExists: async function (
+      property: PetPropertyName
+    ): Promise<boolean> {
+      const propertiesWithGivenName = (
+        await dbClient.query(
+          `
+        SELECT 1
+        FROM pet_properties p
+        WHERE p.name = $1
+      `,
+          [property]
+        )
+      ).rows;
+
+      return propertiesWithGivenName.length > 0;
     },
   };
 

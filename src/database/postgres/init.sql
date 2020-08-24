@@ -32,4 +32,13 @@ CREATE TABLE IF NOT EXISTS pet_properties(
   CONSTRAINT fk_pet_type
     FOREIGN KEY (pet_type_id)
       REFERENCES pet_types(id)
-)
+);
+
+CREATE TABLE IF NOT EXISTS pet_modifiers(
+  id BIGSERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  property VARCHAR(255) NOT NULL,
+  modifier REAL NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS pet_modifier_index 
+  ON pet_modifiers(name, property, modifier);
