@@ -191,7 +191,7 @@ describe('user routes', () => {
         return request(server)
           .post('/petModifiers')
           .send(newPetModifier)
-          .expect(400)
+          .expect(404)
           .expect((res) => {
             expect(res.body.message).to.equal(
               `Pet property ${property} doesn't exist`

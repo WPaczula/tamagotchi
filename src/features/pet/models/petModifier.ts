@@ -1,6 +1,5 @@
 import { PetPropertyName } from './petProperty';
 import { validateNewPetModifier } from '../validators/petModifier';
-import { PetTypesRepository } from '../repositories';
 
 interface PetModifierBase {
   readonly name: string;
@@ -17,17 +16,13 @@ export interface PetModifier extends PetModifierBase {
 export const makeNewPetModifier = async (
   name: string,
   property: PetPropertyName,
-  modifier: number,
-  petTypesRepostiory: PetTypesRepository
+  modifier: number
 ): Promise<NewPetModifier> => {
-  const petModifier = await validateNewPetModifier(
-    {
-      name,
-      property,
-      modifier,
-    },
-    petTypesRepostiory
-  );
+  const petModifier = await validateNewPetModifier({
+    name,
+    property,
+    modifier,
+  });
 
   return Object.freeze(petModifier);
 };

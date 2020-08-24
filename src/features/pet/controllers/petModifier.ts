@@ -10,12 +10,15 @@ export const makeCreatePetModifierHandler = (
   const { name, property, modifier } = req.body;
 
   try {
-    const newPetModifier = await makeNewPetModifier(
-      name,
-      property,
-      modifier,
-      petTypesRepository
+    const newPetModifier = await makeNewPetModifier(name, property, modifier);
+
+    const petPropertyExists = await petTypesRepository.checkIfPropertyExists(
+      newPetModifier.property
     );
+    if (!petPropertyExists) {
+      res.status(404);
+      throw new Error(`Pet property ${newPetModifier.property} doesn't exist`);
+    }
 
     await petModifiersRepository.saveNewPetModifier(newPetModifier);
 
