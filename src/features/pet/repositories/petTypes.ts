@@ -68,9 +68,9 @@ export const makePetTypesRepository = (dbClient: DBClient) => {
             array_agg(pp.weight) as weights, 
             array_agg(pp.value_per_time) as "valuesPerTime"  
           FROM pet_types pt JOIN pet_properties pp on pt.id = pp.pet_type_id
-          GROUP BY pt.id, pt.name
         `,
-        'pt'
+        'pt',
+        'GROUP BY pt.id, pt.name'
       )) as PetTypeWithPropertyArray[];
 
       const petTypes: PetType[] = petTypesWithPropertyArrays.map((p) => {
