@@ -1,22 +1,15 @@
 import request from 'supertest';
 import makeServer from '../../app';
 import makeDBClient from '../factory/db-client';
-import {
-  makeUser,
-  makeUserDto,
-  makeFakeUsersRepositoryFactory,
-} from '../factory/user';
 import { Server } from 'http';
 import { expect } from 'chai';
-import { NewUser } from '../../features/user/models/auth';
 import { stub, SinonStub } from 'sinon';
-import { User } from '../../features/user/models/user';
 import {
   makeFakePetTypesRepositoryFactory,
   createNewPetType,
   createPetType,
 } from '../factory/petTypes';
-import { NewPetType, makePetType } from '../../features/pet/models/petTypes';
+import { NewPetType } from '../../features/pet/models/petTypes';
 
 describe('user routes', () => {
   let server: Server;
