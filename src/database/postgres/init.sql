@@ -42,3 +42,10 @@ CREATE TABLE IF NOT EXISTS pet_modifiers(
 );
 CREATE UNIQUE INDEX IF NOT EXISTS pet_modifier_index 
   ON pet_modifiers(name, property, modifier);
+
+CREATE TABLE IF NOT EXISTS pet_actions(
+  id BIGSERIAL PRIMARY KEY,
+  pet_type_id BIGINT NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  pet_modifier_ids BIGINT[] NOT NULL
+);

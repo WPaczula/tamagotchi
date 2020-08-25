@@ -3,9 +3,9 @@ import { NewPetModifier } from '../models/petModifier';
 
 export const makePetModifiersRepository = (dbClient: DBClient) => {
   const repository = {
-    saveNewPetModifier: async function (
+    saveNewPetModifier: async (
       newPetModifier: NewPetModifier
-    ): Promise<void> {
+    ): Promise<void> => {
       await dbClient.query(
         `
         INSERT INTO pet_modifiers (name, property, modifier)
@@ -13,6 +13,21 @@ export const makePetModifiersRepository = (dbClient: DBClient) => {
       `,
         [newPetModifier.name, newPetModifier.property, newPetModifier.modifier]
       );
+    },
+
+    checkExistingIds: async (ids: number[]): Promise<number[]> => {
+      const existingIds = (
+        await dbClient.query(
+          `
+        SELECT p.id
+        FROM pet_modifiers p
+        WHERE p.id = ANY($1)
+      `,
+          [ids]
+        )
+      ).rows;
+
+      return existingIds;
     },
   };
 
