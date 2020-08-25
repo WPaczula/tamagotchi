@@ -34,9 +34,15 @@ export const makeCreatePetActionHandler = (
     );
     if (foundPetModifierIds.length !== petAction.petModifierIds.length) {
       res.status(404);
+      const missingIds: number[] = [];
+      petAction.petModifierIds.forEach((modifierId) => {
+        if (!foundPetModifierIds.includes(modifierId)) {
+          missingIds.push(modifierId);
+        }
+      });
       next(
         new Error(
-          `Not all pet modifiers exist, only ${foundPetModifierIds.toString()} were found`
+          `Could not find pet modifier with id(s) ${missingIds.toString()}`
         )
       );
     }

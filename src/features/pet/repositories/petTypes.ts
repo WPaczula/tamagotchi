@@ -95,7 +95,9 @@ export const makePetTypesRepository = (dbClient: DBClient) => {
       return petTypes;
     },
 
-    findOne: async function (petType: Partial<PetType>): Promise<PetType> {
+    findOne: async function (
+      petType: Partial<PetType>
+    ): Promise<PetType | undefined> {
       const petTypes = await this.find(petType);
 
       if (petTypes.length > 1) {

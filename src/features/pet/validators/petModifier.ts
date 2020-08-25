@@ -1,7 +1,6 @@
 import joi from 'joi';
 import ValidationError from '../../../errors/validation';
 import { NewPetModifier } from '../models/petModifier';
-import { PetTypesRepository } from '../repositories';
 
 const newPetModifierSchema = joi.object({
   name: joi.string().trim().min(2).max(255).required(),

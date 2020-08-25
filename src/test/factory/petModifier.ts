@@ -6,10 +6,14 @@ import { NewPetModifier } from '../../features/pet/models/petModifier';
 export const makeFakePetModifiersRepositoryFactory = (
   opts: Partial<PetModifiersRepository> = {}
 ) => {
-  const { saveNewPetModifier = stub().returns(Promise.resolve()) } = opts;
+  const {
+    saveNewPetModifier = stub().returns(Promise.resolve()),
+    checkExistingIds = stub().returns([]),
+  } = opts;
 
   return (dbClient: DBClient): PetModifiersRepository => ({
     saveNewPetModifier,
+    checkExistingIds,
   });
 };
 

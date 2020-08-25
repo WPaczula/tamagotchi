@@ -54,7 +54,7 @@ export const createNewPetType = (opts: Partial<NewPetType>): NewPetType => {
   });
 };
 
-export const createPetType = (opts: Partial<PetType>): PetType => {
+export const createPetType = (opts: Partial<PetType> = {}): PetType => {
   const {
     name = 'CapyBara',
     id = 0,
