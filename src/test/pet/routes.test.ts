@@ -233,7 +233,7 @@ describe('user routes', () => {
           .send(newPetModifier)
           .expect(400)
           .expect((res) => {
-            expect(res.body.message).to.equal(`Pet modifier already exist`);
+            expect(res.body.message).to.equal('Pet modifier already exist');
           });
       });
     });
