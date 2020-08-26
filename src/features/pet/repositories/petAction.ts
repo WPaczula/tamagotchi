@@ -4,20 +4,42 @@ import { NewPetAction, PetAction } from '../models/petAction';
 export const makePetActionsRepository = (dbClient: DBClient) => {
   const repository = {
     saveNewPetAction: async (newPetAction: NewPetAction): Promise<void> => {
-      await dbClient.query(
-        `
-        INSERT INTO pet_actions (name, pet_type_id, pet_modifier_ids)
-        VALUES ($1, $2, $3)
-      `,
-        [newPetAction.name, newPetAction.petTypeId, newPetAction.petModifierIds]
-      );
+      try {
+        await dbClient.query('BEGIN');
+
+        const { id } = (
+          await dbClient.query(
+            `
+            INSERT INTO pet_actions (name, pet_type_id)
+            VALUES ($1, $2)
+            RETURNING id
+            `,
+            [newPetAction.name, newPetAction.petTypeId]
+          )
+        ).rows[0];
+
+        await dbClient.query(
+          `
+              UPDATE pet_modifiers
+              SET pet_action_id = $1
+              WHERE id = ANY ($2)
+              `,
+          [id, newPetAction.petModifierIds]
+        );
+        await dbClient.query('COMMIT');
+      } catch (error) {
+        await dbClient.query('ROLLBACK');
+        throw error;
+      }
     },
 
     getAllPetActions: async (): Promise<PetAction[]> => {
       const petActions = (
         await dbClient.query(`
-        SELECT p.id, p.pet_type_id as "petTypeId", p.name, p.pet_modifier_ids as "petModifierIds"
-        FROM pet_actions p
+        SELECT pa.id, pa.pet_type_id as "petTypeId", pa.name, array_agg(pm.id) as "petModifierIds"
+        FROM pet_actions pa
+        JOIN pet_modifiers pm on pm.pet_action_id = pa.id
+        GROUP BY pa.id, pa.pet_type_id, pa.name
       `)
       ).rows;
 

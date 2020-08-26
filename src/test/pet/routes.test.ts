@@ -302,7 +302,7 @@ describe('user routes', () => {
           .expect(404)
           .expect((res) => {
             expect(res.body.message).to.equal(
-              `Could not find pet modifier with id(s) 2,3`
+              'Could not find pet modifier with id(s) 2,3'
             );
           });
       });
