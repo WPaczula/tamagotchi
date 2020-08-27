@@ -19,7 +19,7 @@ export const makeCreatePetHandler = (
     });
     if (!petType) {
       res.status(404);
-      next(new Error(`Pet type with id ${pet.petTypeId} could not be found`));
+      throw new Error(`Pet type with id ${pet.petTypeId} could not be found`);
     }
 
     await petsRepository.saveNewPet(pet);

@@ -1,5 +1,10 @@
 import { validateNewPet } from '../validators/pet';
 
+export interface NewPetDto {
+  readonly name: string;
+  readonly petTypeId: number;
+}
+
 export interface NewPet {
   readonly name: string;
   readonly petTypeId: number;

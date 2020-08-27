@@ -40,10 +40,8 @@ export const makeCreatePetActionHandler = (
           missingIds.push(modifierId);
         }
       });
-      next(
-        new Error(
-          `Could not find pet modifier with id(s) ${missingIds.toString()}`
-        )
+      throw new Error(
+        `Could not find pet modifier with id(s) ${missingIds.toString()}`
       );
     }
 
