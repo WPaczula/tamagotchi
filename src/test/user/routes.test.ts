@@ -32,7 +32,7 @@ describe('user routes', () => {
     requireAuthenticationStub.restore();
   });
 
-  describe('GET users', () => {
+  describe('GET /users', () => {
     const repositoryModule = require('../../features/user/repositories');
     let repositoryStub: SinonStub;
 
@@ -124,7 +124,7 @@ describe('user routes', () => {
     });
   });
 
-  describe('POST register', () => {
+  describe('POST /register', () => {
     it('should return 400 invalid error if user with a given email already exists.', async () => {
       const email = 'email@email.com';
       const users = [makeUser({ email })];
@@ -155,7 +155,7 @@ describe('user routes', () => {
     });
   });
 
-  describe('POST login', () => {
+  describe('POST /login', () => {
     const hashModule = require('../../features/user/utils/hash');
     let hashStub: SinonStub;
 
@@ -208,7 +208,7 @@ describe('user routes', () => {
     });
   });
 
-  describe('PATCH users/id', () => {
+  describe('PATCH /users/id', () => {
     const repositoryModule = require('../../features/user/repositories');
     const hashModule = require('../../features/user/utils/hash');
     let repositoryStub: SinonStub;
@@ -358,7 +358,7 @@ describe('user routes', () => {
     });
   });
 
-  describe('DELETE users/:id', () => {
+  describe('DELETE /users/:id', () => {
     const repositoryModule = require('../../features/user/repositories');
     let repositoryStub: SinonStub;
 

@@ -45,7 +45,9 @@ export const createPetProperty = (
   });
 };
 
-export const createNewPetType = (opts: Partial<NewPetType>): NewPetType => {
+export const createNewPetType = (
+  opts: Partial<NewPetType> = {}
+): NewPetType => {
   const { name = 'Capybara', properties = [createNewPetProperty()] } = opts;
 
   return Object.freeze({
