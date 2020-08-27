@@ -15,6 +15,7 @@ import {
   makePetModifiersRoutes,
   makePetActionsRoutes,
   makePetTypeRoutes,
+  makePetsRoutes,
 } from './features/pet/routes';
 
 const makeServer = async (dbClient: DBClient) => {
@@ -47,6 +48,7 @@ const makeServer = async (dbClient: DBClient) => {
   app.use('/petTypes', makePetTypeRoutes(dbClient));
   app.use('/petModifiers', makePetModifiersRoutes(dbClient));
   app.use('/petActions', makePetActionsRoutes(dbClient));
+  app.use('/pets', makePetsRoutes(dbClient));
 
   app.use(notFound);
   app.use(errorHandler);

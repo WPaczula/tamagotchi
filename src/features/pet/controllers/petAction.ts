@@ -49,7 +49,7 @@ export const makeCreatePetActionHandler = (
 
     await petActionsRepository.saveNewPetAction(petAction);
 
-    res.status(204).end();
+    res.status(201).end();
   } catch (e) {
     next(e);
   }

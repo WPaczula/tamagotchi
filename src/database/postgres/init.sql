@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS pet_properties(
   CONSTRAINT fk_pet_type
     FOREIGN KEY (pet_type_id)
       REFERENCES pet_types(id)
+      ON DELETE CASCADE
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS pet_property_index
@@ -49,6 +50,7 @@ CREATE TABLE IF NOT EXISTS pet_actions(
   CONSTRAINT fk_pet_type
     FOREIGN KEY (pet_type_id)
       REFERENCES pet_types(id)
+      ON DELETE CASCADE
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS pet_action_index
@@ -64,7 +66,24 @@ CREATE TABLE IF NOT EXISTS pet_modifiers(
   CONSTRAINT fk_pet_action
     FOREIGN KEY (pet_action_id)
       REFERENCES pet_actions(id)
+      ON DELETE CASCADE
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS pet_modifier_index 
   ON pet_modifiers(name, pet_action_id);
+
+-- PETS
+CREATE TABLE IF NOT EXISTS pets(
+  id BIGSERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  pet_type_id BIGINT NOT NULL,
+  user_id BIGINT NOT NULL,
+  CONSTRAINT fk_pet_type
+    FOREIGN KEY (pet_type_id)
+      REFERENCES pet_types(id)
+      ON DELETE CASCADE,
+  CONSTRAINT fk_user
+    FOREIGN KEY (user_id)
+      REFERENCES users(id)
+      ON DELETE CASCADE
+);
