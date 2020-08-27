@@ -1,6 +1,7 @@
 import joi from 'joi';
 import ValidationError from '../../../errors/validation';
 import { NewPet } from '../models/pet';
+import { Request } from 'express';
 
 const newPetSchema = joi.object({
   name: joi.string().trim().min(2).max(255).required(),
@@ -12,6 +13,19 @@ export const validateNewPet = async (newPetAction: NewPet): Promise<NewPet> => {
     const value = await newPetSchema.validateAsync(newPetAction);
 
     return value;
+  } catch (error) {
+    throw new ValidationError(error.message);
+  }
+};
+
+const petIdSchema = joi.object({
+  id: joi.number().min(1).required(),
+});
+export const validatePetId = async (request: Request): Promise<number> => {
+  try {
+    const value = await petIdSchema.validateAsync(request.params);
+
+    return value.id;
   } catch (error) {
     throw new ValidationError(error.message);
   }

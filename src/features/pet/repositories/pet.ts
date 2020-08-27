@@ -1,16 +1,65 @@
 import { DBClient } from '../../../database';
-import { NewPet } from '../models/pet';
+import { NewPet, Pet } from '../models/pet';
+import { findBy } from '../../../utils/find-by';
 
 export const makePetsRepository = (dbClient: DBClient) => {
   const repository = {
     saveNewPet: async (newPet: NewPet): Promise<void> => {
-      await dbClient.query(
-        `
-        INSERT INTO pets (name, pet_type_id, user_id)
-        VALUES ($1, $2, $3)
+      try {
+        await dbClient.query('BEGIN');
+        const { petId } = (
+          await dbClient.query(
+            `
+          INSERT INTO pets (name, pet_type_id, user_id)
+          VALUES ($1, $2, $3)
+          RETURNING id as "petId"
+          `,
+            [newPet.name, newPet.petTypeId, newPet.userId]
+          )
+        ).rows[0];
+
+        const petPropertyValues = (
+          await dbClient.query(
+            `
+          SELECT pp.id as "petPropertyId", pp.value
+          FROM pet_properties pp
+          WHERE pp.pet_type_id = $1
+        `,
+            [newPet.petTypeId]
+          )
+        ).rows;
+
+        petPropertyValues.forEach(async ({ petPropertyId, value }) => {
+          await dbClient.query(
+            `
+            INSERT INTO pet_property_values (value, pet_property_id, pet_id, updated_at)
+            VALUES ($1, $2, $3, $4)
+          `,
+            [value, petPropertyId, petId, new Date()]
+          );
+        });
+
+        await dbClient.query('COMMIT');
+      } catch (e) {
+        await dbClient.query('ROLLBACK');
+        throw e;
+      }
+    },
+
+    findOne: async (petOptions: Partial<Pet>): Promise<Pet | undefined> => {
+      const pet = (
+        await findBy(
+          dbClient,
+          petOptions,
+          `
+        SELECT p.id, p.name, p.pet_type_id as "petTypeId", p.user_id as "userId"
+        FROM pets p
       `,
-        [newPet.name, newPet.petTypeId, newPet.userId]
-      );
+          'p'
+        )
+      )[0];
+
+      return pet;
     },
   };
 

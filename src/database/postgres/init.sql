@@ -87,3 +87,20 @@ CREATE TABLE IF NOT EXISTS pets(
       REFERENCES users(id)
       ON DELETE CASCADE
 );
+
+-- PET PROPERTY VALUES
+CREATE TABLE IF NOT EXISTS pet_property_values(
+  id BIGSERIAL PRIMARY KEY,
+  value REAL NOT NULL,
+  pet_property_id BIGINT NOT NULL,
+  pet_id BIGINT NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
+  CONSTRAINT fk_pet_property
+    FOREIGN KEY (pet_property_id)
+      REFERENCES pet_properties(id)
+      ON DELETE CASCADE,
+  CONSTRAINT fk_pet
+    FOREIGN KEY (pet_id)
+      REFERENCES pets(id)
+      ON DELETE CASCADE
+);

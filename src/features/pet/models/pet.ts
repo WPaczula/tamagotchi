@@ -5,10 +5,21 @@ export interface NewPetDto {
   readonly petTypeId: number;
 }
 
-export interface NewPet {
+interface PetBase {
   readonly name: string;
   readonly petTypeId: number;
   readonly userId: number;
+}
+
+export interface NewPet extends PetBase {}
+
+export interface Pet extends PetBase {
+  readonly id: number;
+}
+
+export interface PetDto extends PetBase {
+  readonly id: number;
+  readonly health: number;
 }
 
 export const makeNewPet = async (

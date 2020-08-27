@@ -3,7 +3,10 @@ import { makePetTypesRepository } from '../repositories';
 import { DBClient } from '../../../database';
 import { requireAuthentication } from '../../../middlewares';
 import { makePetsRepository } from '../repositories/pet';
-import { makeCreatePetHandler } from '../controllers/pet';
+import { makeCreatePetHandler, makeGetPetHandler } from '../controllers/pet';
+import { makePetHealthService } from '../services/pet-health';
+import { makePetPropertiesRepository } from '../repositories/petProperty';
+import { calculatePassedTime } from '../utils/date';
 
 /**
  * @swagger
@@ -35,6 +38,11 @@ export const makePetsRoutes = (dbClient: DBClient) => {
 
   const petTypesRepository = makePetTypesRepository(dbClient);
   const petsRepository = makePetsRepository(dbClient);
+  const petPropertiesRepository = makePetPropertiesRepository(dbClient);
+  const petHealthService = makePetHealthService(
+    petPropertiesRepository,
+    calculatePassedTime
+  );
 
   /**
    * @swagger
@@ -61,6 +69,31 @@ export const makePetsRoutes = (dbClient: DBClient) => {
     '/',
     requireAuthentication,
     makeCreatePetHandler(petTypesRepository, petsRepository)
+  );
+
+  /**
+   * @swagger
+   * /pets/:id:
+   *  get:
+   *    tags: [Pets]
+   *    description: Use to get current pets status
+   *    parameters:
+   *    - in: query
+   *      name: id
+   *      required: true
+   *      type: integer
+   *    responses:
+   *      '200':
+   *        description: Pet state
+   *      '404':
+   *        description: No pet found
+   *      '400':
+   *        description: Pet id validation failed
+   */
+  router.get(
+    '/:id',
+    requireAuthentication,
+    makeGetPetHandler(petsRepository, petHealthService)
   );
 
   return router;
