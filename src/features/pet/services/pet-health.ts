@@ -1,11 +1,11 @@
 import { PetPropertiesRepository } from '../repositories/petProperty';
 import { PetPropertyValue } from '../models/petProperty';
 import { Pet } from '../models/pet';
-import { PassedTimeCalculationFunction } from '../utils/date';
+import { DateService } from '../utils/date';
 
-export const makePetHealthService = (
+export const makePetsHealthService = (
   petPropertiesRepository: PetPropertiesRepository,
-  calculatePassedTime: PassedTimeCalculationFunction
+  dateService: DateService
 ) => {
   const service = {
     getPetsHealth: async (pet: Pet) => {
@@ -33,7 +33,7 @@ export const makePetHealthService = (
         const { value, updatedAt } = cp;
 
         const newValue = Math.max(
-          value - calculatePassedTime(updatedAt) * valuePerTime,
+          value - dateService.calculatePassedTime(updatedAt) * valuePerTime,
           0
         );
 
@@ -43,7 +43,7 @@ export const makePetHealthService = (
         updatedPropertyValues.push({
           ...cp,
           value: newValue,
-          updatedAt: new Date(),
+          updatedAt: dateService.getCurrentDate(),
         });
       });
 
@@ -57,4 +57,4 @@ export const makePetHealthService = (
   return Object.freeze(service);
 };
 
-export type PetHealthService = ReturnType<typeof makePetHealthService>;
+export type PetHealthService = ReturnType<typeof makePetsHealthService>;

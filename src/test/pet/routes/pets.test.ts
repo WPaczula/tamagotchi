@@ -11,9 +11,12 @@ import {
   createNewPetDto,
   makeFakePetRepositoryFactory,
   createNewPet,
+  createPet,
+  makeFakePetHealthServiceFactory,
 } from '../../factory/pet';
 import { makeUser } from '../../factory/user';
 import { expect } from 'chai';
+import { PetDto } from '../../../features/pet/models/pet';
 
 describe('pet routes', () => {
   let server: Server;
@@ -42,10 +45,13 @@ describe('pet routes', () => {
   let petTypesRepositoryStub: SinonStub;
   const petsRepositoryModule = require('../../../features/pet/repositories/pet');
   let petsRepositoryStub: SinonStub;
+  const petHealthServiceModule = require('../../../features/pet/services/pet-health');
+  let petsHealthServiceStub: SinonStub;
 
   afterEach(() => {
     petTypesRepositoryStub?.restore();
     petsRepositoryStub?.restore();
+    petsHealthServiceStub?.restore();
   });
 
   describe('POST pets', () => {
@@ -95,6 +101,61 @@ describe('pet routes', () => {
           expect(saveNewPetStub).to.have.been.calledWith(
             createNewPet({ ...pet, userId: user.id })
           );
+        });
+    });
+  });
+
+  describe('GET /pets/:id', () => {
+    it('should return 404 if pet was not found.', async () => {
+      const id = 1;
+      const findOneStub = stub().returns(Promise.resolve(undefined));
+      petsRepositoryStub = stub(
+        petsRepositoryModule,
+        'makePetsRepository'
+      ).callsFake(
+        makeFakePetRepositoryFactory({
+          findOne: findOneStub,
+        })
+      );
+
+      server = await makeServer(makeDBClient());
+
+      return request(server)
+        .get('/pets/1')
+        .expect(404)
+        .expect(() => {
+          expect(findOneStub).to.have.been.calledWith({ id });
+        });
+    });
+
+    it('should return 200 and pet health if pet was found.', async () => {
+      const pet = createPet();
+      petsRepositoryStub = stub(
+        petsRepositoryModule,
+        'makePetsRepository'
+      ).callsFake(
+        makeFakePetRepositoryFactory({
+          findOne: () => Promise.resolve(pet),
+        })
+      );
+      const health = 100;
+      petsHealthServiceStub = stub(
+        petHealthServiceModule,
+        'makePetsHealthService'
+      ).callsFake(
+        makeFakePetHealthServiceFactory({
+          getPetsHealth: () => Promise.resolve(health),
+        })
+      );
+      const petDto: PetDto = { ...pet, health };
+
+      server = await makeServer(makeDBClient());
+
+      return request(server)
+        .get('/pets/1')
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).to.be.deep.equal(petDto);
         });
     });
   });

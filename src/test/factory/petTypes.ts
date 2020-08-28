@@ -5,6 +5,7 @@ import { NewPetType, PetType } from '../../features/pet/models/petTypes';
 import {
   NewPetProperty,
   PetProperty,
+  PetPropertyValue,
 } from '../../features/pet/models/petProperty';
 
 export const createNewPetProperty = (
@@ -42,6 +43,26 @@ export const createPetProperty = (
     value,
     weight,
     valuePerTime,
+  });
+};
+
+export const createPetPropertyValue = (
+  opts: Partial<PetPropertyValue> = {}
+): PetPropertyValue => {
+  const {
+    id = 0,
+    petId = 1,
+    petPropertyId = 1,
+    updatedAt = new Date(),
+    value = 100,
+  } = opts;
+
+  return Object.freeze({
+    id,
+    petId,
+    petPropertyId,
+    updatedAt,
+    value,
   });
 };
 

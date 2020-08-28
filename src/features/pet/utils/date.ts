@@ -1,4 +1,13 @@
-export const calculatePassedTime = (past: Date) => {
-  return Date.now() - past.getTime();
+export const makeDateService = () => {
+  const service = {
+    calculatePassedTime: (past: Date) => {
+      return Date.now() - past.getTime();
+    },
+
+    getCurrentDate: () => new Date(),
+  };
+
+  return Object.freeze(service);
 };
-export type PassedTimeCalculationFunction = typeof calculatePassedTime;
+
+export type DateService = ReturnType<typeof makeDateService>;

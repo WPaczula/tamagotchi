@@ -4,9 +4,9 @@ import { DBClient } from '../../../database';
 import { requireAuthentication } from '../../../middlewares';
 import { makePetsRepository } from '../repositories/pet';
 import { makeCreatePetHandler, makeGetPetHandler } from '../controllers/pet';
-import { makePetHealthService } from '../services/pet-health';
+import { makePetsHealthService } from '../services/pet-health';
 import { makePetPropertiesRepository } from '../repositories/petProperty';
-import { calculatePassedTime } from '../utils/date';
+import { makeDateService } from '../utils/date';
 
 /**
  * @swagger
@@ -39,9 +39,9 @@ export const makePetsRoutes = (dbClient: DBClient) => {
   const petTypesRepository = makePetTypesRepository(dbClient);
   const petsRepository = makePetsRepository(dbClient);
   const petPropertiesRepository = makePetPropertiesRepository(dbClient);
-  const petHealthService = makePetHealthService(
+  const petHealthService = makePetsHealthService(
     petPropertiesRepository,
-    calculatePassedTime
+    makeDateService()
   );
 
   /**
