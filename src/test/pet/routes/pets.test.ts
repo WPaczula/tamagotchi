@@ -17,6 +17,11 @@ import {
 import { makeUser } from '../../factory/user';
 import { expect } from 'chai';
 import { PetDto } from '../../../features/pet/models/pet';
+import {
+  makeFakePetActionsRepositoryFactory,
+  createPetAction,
+  makeFakePetActionsServiceFactory,
+} from '../../factory/petAction';
 
 describe('pet routes', () => {
   let server: Server;
@@ -47,11 +52,17 @@ describe('pet routes', () => {
   let petsRepositoryStub: SinonStub;
   const petHealthServiceModule = require('../../../features/pet/services/pet-health');
   let petsHealthServiceStub: SinonStub;
+  const actionsRepositoryModule = require('../../../features/pet/repositories/petAction');
+  let actionsRepositoryStub: SinonStub;
+  const petActionsServiceModule = require('../../../features/pet/services/pet-action');
+  let petActionsServiceStub: SinonStub;
 
   afterEach(() => {
     petTypesRepositoryStub?.restore();
     petsRepositoryStub?.restore();
     petsHealthServiceStub?.restore();
+    actionsRepositoryStub?.restore();
+    petActionsServiceStub?.restore();
   });
 
   describe('POST pets', () => {
@@ -156,6 +167,103 @@ describe('pet routes', () => {
         .expect(200)
         .expect((res) => {
           expect(res.body).to.be.deep.equal(petDto);
+        });
+    });
+  });
+
+  describe('POST /pets/:petId/actions/:actionId', () => {
+    it('should return 404 if pet is not found.', async () => {
+      petsRepositoryStub = stub(
+        petsRepositoryModule,
+        'makePetsRepository'
+      ).callsFake(
+        makeFakePetRepositoryFactory({
+          findOne: () => Promise.resolve(undefined),
+        })
+      );
+
+      server = await makeServer(makeDBClient());
+
+      return request(server).post('/pets/1/actions/1').expect(404);
+    });
+
+    it('should return 404 if user does not have pet with given id.', async () => {
+      const notCurrentUserId = 404;
+      const pet = createPet({ userId: notCurrentUserId });
+      petsRepositoryStub = stub(
+        petsRepositoryModule,
+        'makePetsRepository'
+      ).callsFake(
+        makeFakePetRepositoryFactory({
+          findOne: () => Promise.resolve(pet),
+        })
+      );
+
+      server = await makeServer(makeDBClient());
+
+      return request(server).post('/pets/1/actions/1').expect(404);
+    });
+
+    it('should return 404 if action does not exist.', async () => {
+      const pet = createPet();
+      petsRepositoryStub = stub(
+        petsRepositoryModule,
+        'makePetsRepository'
+      ).callsFake(
+        makeFakePetRepositoryFactory({
+          findOne: () => Promise.resolve(pet),
+        })
+      );
+      actionsRepositoryStub = stub(
+        actionsRepositoryModule,
+        'makePetActionsRepository'
+      ).callsFake(
+        makeFakePetActionsRepositoryFactory({
+          findOne: () => Promise.resolve(undefined),
+        })
+      );
+
+      server = await makeServer(makeDBClient());
+
+      return request(server).post('/pets/1/actions/1').expect(404);
+    });
+
+    it('should return 204 if action is successfully applied to the pet.', async () => {
+      const pet = createPet();
+      petsRepositoryStub = stub(
+        petsRepositoryModule,
+        'makePetsRepository'
+      ).callsFake(
+        makeFakePetRepositoryFactory({
+          findOne: () => Promise.resolve(pet),
+        })
+      );
+      const action = createPetAction();
+      actionsRepositoryStub = stub(
+        actionsRepositoryModule,
+        'makePetActionsRepository'
+      ).callsFake(
+        makeFakePetActionsRepositoryFactory({
+          findOne: () => Promise.resolve(action),
+        })
+      );
+      const applyActionStub = stub().returns(Promise.resolve());
+      petActionsServiceStub = stub(
+        petActionsServiceModule,
+        'makePetActionsService'
+      ).callsFake(
+        makeFakePetActionsServiceFactory({
+          applyAction: applyActionStub,
+        })
+      );
+
+      server = await makeServer(makeDBClient());
+
+      return request(server)
+        .post('/pets/1/actions/1')
+        .expect(204)
+        .expect(() => {
+          expect(applyActionStub).to.have.been.calledWith(pet, action);
         });
     });
   });

@@ -15,7 +15,7 @@ import {
 import { makePetsHealthService } from '../services/pet-health';
 import { makePetPropertiesRepository } from '../repositories/petProperty';
 import { makeDateService } from '../utils/date';
-import { makePetsActionService } from '../services/pet-action';
+import { makePetActionsService } from '../services/pet-action';
 
 /**
  * @swagger
@@ -50,7 +50,7 @@ export const makePetsRoutes = (dbClient: DBClient) => {
   const petPropertiesRepository = makePetPropertiesRepository(dbClient);
   const petActionsRepository = makePetActionsRepository(dbClient);
   const petModifiersRepository = makePetModifiersRepository(dbClient);
-  const petActionsService = makePetsActionService(
+  const petActionsService = makePetActionsService(
     petPropertiesRepository,
     petModifiersRepository
   );

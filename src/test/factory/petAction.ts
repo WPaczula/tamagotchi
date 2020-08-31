@@ -2,6 +2,7 @@ import { PetActionsRepository } from '../../features/pet/repositories';
 import { stub } from 'sinon';
 import { DBClient } from '../../database';
 import { NewPetAction, PetAction } from '../../features/pet/models/petAction';
+import { PetActionsService } from '../../features/pet/services/pet-action';
 
 export const makeFakePetActionsRepositoryFactory = (
   opts: Partial<PetActionsRepository> = {}
@@ -40,4 +41,15 @@ export const createPetAction = (opts: Partial<PetAction> = {}): PetAction => {
     petTypeId,
     petModifierIds,
   });
+};
+
+export const makeFakePetActionsServiceFactory = (
+  opts: Partial<PetActionsService>
+) => {
+  const { applyAction = stub().returns(Promise.resolve()) } = opts;
+
+  return () =>
+    Object.freeze({
+      applyAction,
+    });
 };

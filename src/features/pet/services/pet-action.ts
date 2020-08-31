@@ -3,7 +3,7 @@ import { Pet } from '../models/pet';
 import { PetAction } from '../models/petAction';
 import { PetModifiersRepository } from '../repositories';
 
-export const makePetsActionService = (
+export const makePetActionsService = (
   petPropertiesRepository: PetPropertiesRepository,
   petModifiersRepository: PetModifiersRepository
 ) => {
@@ -57,4 +57,4 @@ export const makePetsActionService = (
   return Object.freeze(service);
 };
 
-export type PetActionsService = ReturnType<typeof makePetsActionService>;
+export type PetActionsService = ReturnType<typeof makePetActionsService>;
