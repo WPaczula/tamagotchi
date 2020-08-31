@@ -8,12 +8,14 @@ export const makeFakePetModifiersRepositoryFactory = (
 ) => {
   const {
     saveNewPetModifier = stub().returns(Promise.resolve()),
-    checkExistingIds = stub().returns([]),
+    checkExistingIds = stub().returns(Promise.resolve([])),
+    findByIds = stub().returns(Promise.resolve([])),
   } = opts;
 
   return (dbClient: DBClient): PetModifiersRepository => ({
     saveNewPetModifier,
     checkExistingIds,
+    findByIds,
   });
 };
 

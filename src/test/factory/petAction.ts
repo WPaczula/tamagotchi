@@ -9,11 +9,13 @@ export const makeFakePetActionsRepositoryFactory = (
   const {
     getAllPetActions = stub().returns(Promise.resolve([])),
     saveNewPetAction = stub().returns(Promise.resolve()),
+    findOne = stub().returns(Promise.resolve(undefined)),
   } = opts;
 
   return (dbClient: DBClient): PetActionsRepository => ({
     getAllPetActions,
     saveNewPetAction,
+    findOne,
   });
 };
 

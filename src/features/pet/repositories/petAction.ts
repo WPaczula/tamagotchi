@@ -1,5 +1,6 @@
 import { DBClient } from '../../../database';
 import { NewPetAction, PetAction } from '../models/petAction';
+import { findBy } from '../../../utils/find-by';
 
 export const makePetActionsRepository = (dbClient: DBClient) => {
   const repository = {
@@ -44,6 +45,32 @@ export const makePetActionsRepository = (dbClient: DBClient) => {
       ).rows;
 
       return petActions;
+    },
+
+    findOne: async (
+      opts: Partial<PetAction>
+    ): Promise<PetAction | undefined> => {
+      const petActions = await findBy(
+        dbClient,
+        opts,
+        `
+      SELECT pa.id, pa.pet_type_id as "petTypeId", pa.name, array_agg(pm.id) as "petModifierIds"
+      FROM pet_actions pa
+      JOIN pet_modifiers pm on pm.pet_action_id = pa.id
+      `,
+        'pa',
+        'GROUP BY pa.id, pa.pet_type_id, pa.name'
+      );
+
+      if (petActions.length > 1) {
+        throw new Error(
+          `More than one action was found using criteria: ${JSON.stringify(
+            opts
+          )}`
+        );
+      }
+
+      return petActions[0];
     },
   };
 

@@ -30,3 +30,19 @@ export const validatePetId = async (request: Request): Promise<number> => {
     throw new ValidationError(error.message);
   }
 };
+
+const applyActionSchema = joi.object({
+  petId: joi.number().min(1).required(),
+  actionId: joi.number().min(1).required(),
+});
+export const validateApplyActionRequest = async (
+  request: Request
+): Promise<{ petId: number; actionId: number }> => {
+  try {
+    const value = await applyActionSchema.validateAsync(request.params);
+
+    return value;
+  } catch (error) {
+    throw new ValidationError(error.message);
+  }
+};

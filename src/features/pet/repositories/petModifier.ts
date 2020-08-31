@@ -1,5 +1,5 @@
 import { DBClient } from '../../../database';
-import { NewPetModifier } from '../models/petModifier';
+import { NewPetModifier, PetModifier } from '../models/petModifier';
 
 export const makePetModifiersRepository = (dbClient: DBClient) => {
   const repository = {
@@ -15,19 +15,25 @@ export const makePetModifiersRepository = (dbClient: DBClient) => {
       );
     },
 
-    checkExistingIds: async (ids: number[]): Promise<number[]> => {
-      const existingIds = (
+    checkExistingIds: async function (ids: number[]): Promise<number[]> {
+      const existingIds = (await this.findByIds(ids)).map((m) => m.id);
+
+      return existingIds;
+    },
+
+    findByIds: async (ids: number[]): Promise<PetModifier[]> => {
+      const modifiers = (
         await dbClient.query(
           `
-        SELECT p.id
-        FROM pet_modifiers p
-        WHERE p.id = ANY($1)
-      `,
+          SELECT p.id, p.name, p.property, p.modifier
+          FROM pet_modifiers p
+          WHERE p.id = ANY($1)
+        `,
           [ids]
         )
       ).rows;
 
-      return existingIds;
+      return modifiers;
     },
   };
 

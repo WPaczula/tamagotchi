@@ -1,12 +1,21 @@
 import { Router } from 'express';
-import { makePetTypesRepository } from '../repositories';
+import {
+  makePetTypesRepository,
+  makePetActionsRepository,
+  makePetModifiersRepository,
+} from '../repositories';
 import { DBClient } from '../../../database';
 import { requireAuthentication } from '../../../middlewares';
 import { makePetsRepository } from '../repositories/pet';
-import { makeCreatePetHandler, makeGetPetHandler } from '../controllers/pet';
+import {
+  makeCreatePetHandler,
+  makeGetPetHandler,
+  makeApplyActionHandler,
+} from '../controllers/pet';
 import { makePetsHealthService } from '../services/pet-health';
 import { makePetPropertiesRepository } from '../repositories/petProperty';
 import { makeDateService } from '../utils/date';
+import { makePetsActionService } from '../services/pet-action';
 
 /**
  * @swagger
@@ -39,6 +48,12 @@ export const makePetsRoutes = (dbClient: DBClient) => {
   const petTypesRepository = makePetTypesRepository(dbClient);
   const petsRepository = makePetsRepository(dbClient);
   const petPropertiesRepository = makePetPropertiesRepository(dbClient);
+  const petActionsRepository = makePetActionsRepository(dbClient);
+  const petModifiersRepository = makePetModifiersRepository(dbClient);
+  const petActionsService = makePetsActionService(
+    petPropertiesRepository,
+    petModifiersRepository
+  );
   const petHealthService = makePetsHealthService(
     petPropertiesRepository,
     makeDateService()
@@ -94,6 +109,41 @@ export const makePetsRoutes = (dbClient: DBClient) => {
     '/:id',
     requireAuthentication,
     makeGetPetHandler(petsRepository, petHealthService)
+  );
+
+  /**
+   * @swagger
+   * /pets/:petId/actions/:actionId:
+   *  post:
+   *    tags: [Pets]
+   *    description: Use to apply an action to a pet
+   *    parameters:
+   *    - in: query
+   *      name: petId
+   *      required: true
+   *      type: integer
+   *      min: 1
+   *    - in: query
+   *      name: actionId
+   *      required: true
+   *      type: integer
+   *      min: 1
+   *    responses:
+   *      '204':
+   *        description: Successfully applied
+   *      '400':
+   *        description: Id validation fails
+   *      '404':
+   *        description: Pet or action not found
+   */
+  router.post(
+    '/:petId/actions/:actionId',
+    requireAuthentication,
+    makeApplyActionHandler(
+      petsRepository,
+      petActionsRepository,
+      petActionsService
+    )
   );
 
   return router;
