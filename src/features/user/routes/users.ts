@@ -112,7 +112,7 @@ export const makeUsersRoutes = (client: DBClient) => {
 
   /**
    * @swagger
-   * /users/:id:
+   * /users/{id}:
    *  patch:
    *    tags: [Users]
    *    description: Use to update a user
@@ -143,7 +143,7 @@ export const makeUsersRoutes = (client: DBClient) => {
 
   /**
    * @swagger
-   * /users/:id:
+   * /users/{id}:
    *  delete:
    *    tags: [Users]
    *    description: Delete a user

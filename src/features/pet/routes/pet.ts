@@ -88,12 +88,12 @@ export const makePetsRoutes = (dbClient: DBClient) => {
 
   /**
    * @swagger
-   * /pets/:id:
+   * /pets/{id}:
    *  get:
    *    tags: [Pets]
    *    description: Use to get current pets status
    *    parameters:
-   *    - in: query
+   *    - in: path
    *      name: id
    *      required: true
    *      type: integer
@@ -113,17 +113,17 @@ export const makePetsRoutes = (dbClient: DBClient) => {
 
   /**
    * @swagger
-   * /pets/:petId/actions/:actionId:
+   * /pets/{petId}/actions/{actionId}:
    *  post:
    *    tags: [Pets]
    *    description: Use to apply an action to a pet
    *    parameters:
-   *    - in: query
+   *    - in: path
    *      name: petId
    *      required: true
    *      type: integer
    *      min: 1
-   *    - in: query
+   *    - in: path
    *      name: actionId
    *      required: true
    *      type: integer
