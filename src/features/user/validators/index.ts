@@ -13,8 +13,7 @@ const newUserValidationSchema = joi.object<NewUser>({
 });
 export const validateNewUser = async (user: NewUser): Promise<NewUser> => {
   try {
-    const value = await newUserValidationSchema.validateAsync(user);
-    return value;
+    return await newUserValidationSchema.validateAsync(user);
   } catch (error) {
     throw new ValidationError(error.message);
   }

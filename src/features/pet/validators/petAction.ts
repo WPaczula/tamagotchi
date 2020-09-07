@@ -15,9 +15,7 @@ export const validateNewPetAction = async (
   newPetAction: NewPetAction
 ): Promise<NewPetAction> => {
   try {
-    const value = await newPetActionSchema.validateAsync(newPetAction);
-
-    return value;
+    return await newPetActionSchema.validateAsync(newPetAction);
   } catch (error) {
     throw new ValidationError(error.message);
   }

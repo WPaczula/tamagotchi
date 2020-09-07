@@ -4,7 +4,7 @@ import { PetPropertyValue, PetProperty } from '../models/petProperty';
 export const makePetPropertiesRepository = (dbClient: DBClient) => {
   const repository = {
     getPropertyValues: async (petId: number): Promise<PetPropertyValue[]> => {
-      const propertyValues = (
+      return (
         await dbClient.query(
           `
         SELECT pv.id, pv.value, pv.pet_property_id as "petPropertyId", pv.pet_id as "petId", pv.updated_at as "updatedAt"
@@ -19,8 +19,6 @@ export const makePetPropertiesRepository = (dbClient: DBClient) => {
           updatedAt: new Date(p.updatedAt),
         })
       );
-
-      return propertyValues;
     },
 
     getProperties: async (petTypeId: number): Promise<PetProperty[]> => {

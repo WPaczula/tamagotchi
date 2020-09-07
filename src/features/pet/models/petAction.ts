@@ -23,5 +23,5 @@ export const makeNewPetAction = async (
     petModifierIds,
   });
 
-  return newPetAction;
+  return Object.freeze(newPetAction);
 };

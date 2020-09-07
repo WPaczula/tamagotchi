@@ -6,7 +6,7 @@ import { findBy } from '../../../utils/find-by';
 export const makeUsersRepository = (client: DBClient) => {
   const repository = {
     checkIfEmailIsInUse: async (email: string): Promise<boolean> => {
-      const isEmailInUse =
+      return (
         (
           await client.query<User>(
             `
@@ -16,9 +16,8 @@ export const makeUsersRepository = (client: DBClient) => {
             `,
             [email]
           )
-        ).rowCount > 0;
-
-      return isEmailInUse;
+        ).rowCount > 0
+      );
     },
 
     addUser: async (user: NewUser): Promise<void> => {
@@ -31,8 +30,8 @@ export const makeUsersRepository = (client: DBClient) => {
       );
     },
 
-    find: async function (user: Partial<User> = {}): Promise<User[]> {
-      const users = findBy(
+    find: function (user: Partial<User> = {}): Promise<User[]> {
+      return findBy(
         client,
         user,
         `
@@ -41,7 +40,6 @@ export const makeUsersRepository = (client: DBClient) => {
         `,
         'u'
       );
-      return users;
     },
 
     findOne: async function (user: Partial<User>): Promise<User | undefined> {

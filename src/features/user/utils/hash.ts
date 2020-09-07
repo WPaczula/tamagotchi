@@ -1,18 +1,11 @@
 import bcrypt from 'bcryptjs';
 
-export const hash = async (text: string): Promise<string> => {
-  const hashedText = await bcrypt.hash(text, 2);
-
-  return hashedText;
+export const hash = (text: string): Promise<string> => {
+  return bcrypt.hash(text, 2);
 };
 export type HashFunction = typeof hash;
 
-export const compareHash = async (
-  hash: string,
-  text: string
-): Promise<boolean> => {
-  const isValid = await bcrypt.compare(text, hash);
-
-  return isValid;
+export const compareHash = (hash: string, text: string): Promise<boolean> => {
+  return bcrypt.compare(text, hash);
 };
 export type CompareHashFunction = typeof compareHash;
