@@ -10,11 +10,12 @@ import { makePagedResult } from '../../../utils/paging';
 import { getCurrentUrl } from '../../../utils/url';
 import jsonPatch from 'fast-json-patch';
 import { HashFunction } from '../utils/hash';
+import createHandler from '../../../utils/create-handler';
 
 export const makeGetUsersHandler = (
   usersRepository: UsersRepository
-): RequestHandler => async (req, res, next) => {
-  try {
+): RequestHandler =>
+  createHandler(async (req, res) => {
     const {
       email,
       firstName,
@@ -34,16 +35,13 @@ export const makeGetUsersHandler = (
     res
       .status(200)
       .json(makePagedResult(users, { page, pageSize }, getCurrentUrl(req)));
-  } catch (error) {
-    next(error);
-  }
-};
+  });
 
 export const makeUpdateUserHandler = (
   usersRepository: UsersRepository,
   hash: HashFunction
-): RequestHandler => async (req, res, next) => {
-  try {
+): RequestHandler =>
+  createHandler(async (req, res) => {
     const id = await validateUserParams(req);
 
     const user = await usersRepository.findOne({ id });
@@ -78,15 +76,12 @@ export const makeUpdateUserHandler = (
     usersRepository.updateUser(updatedUser);
 
     res.status(204).end();
-  } catch (error) {
-    next(error);
-  }
-};
+  });
 
 export const makeDeleteUserHandler = (
   usersRepository: UsersRepository
-): RequestHandler => async (req, res, next) => {
-  try {
+): RequestHandler =>
+  createHandler(async (req, res) => {
     const id = await validateUserParams(req);
 
     const user = await usersRepository.findOne({
@@ -100,7 +95,4 @@ export const makeDeleteUserHandler = (
     usersRepository.deleteUser(id);
 
     res.status(204).end();
-  } catch (error) {
-    next(error);
-  }
-};
+  });

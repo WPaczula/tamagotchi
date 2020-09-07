@@ -2,12 +2,13 @@ import { UsersRepository } from '../repositories';
 import { RequestHandler } from 'express';
 import { NewUserFactory } from '../models/auth';
 import ValidationError from '../../../errors/validation';
+import createHandler from '../../../utils/create-handler';
 
 export const makeRegisterHandler = (
   usersRepository: UsersRepository,
   newUserFactory: NewUserFactory
-): RequestHandler => async (req, res, next) => {
-  try {
+): RequestHandler =>
+  createHandler(async (req, res) => {
     const { email, password, firstName, lastName } = req.body;
 
     const userWithEmailExist = await usersRepository.checkIfEmailIsInUse(email);
@@ -19,10 +20,7 @@ export const makeRegisterHandler = (
     await usersRepository.addUser(user);
 
     res.status(201).end();
-  } catch (error) {
-    next(error);
-  }
-};
+  });
 
 export const makeLoginHandler = (): RequestHandler => (req, res) => {
   res.status(204).end();

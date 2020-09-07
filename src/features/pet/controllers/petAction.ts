@@ -8,15 +8,16 @@ import {
 import { validateGetPetTypes } from '../validators/petTypes';
 import { makePagedResult } from '../../../utils/paging';
 import { getCurrentUrl } from '../../../utils/url';
+import createHandler from '../../../utils/create-handler';
 
 export const makeCreatePetActionHandler = (
   petTypesRepository: PetTypesRepository,
   petModifiersRepository: PetModifiersRepository,
   petActionsRepository: PetActionsRepository
-): RequestHandler => async (req, res, next) => {
-  const { name, petTypeId, petModifierIds } = req.body;
+): RequestHandler =>
+  createHandler(async (req, res, next) => {
+    const { name, petTypeId, petModifierIds } = req.body;
 
-  try {
     const petAction = await makeNewPetAction(name, petTypeId, petModifierIds);
 
     const petType = await petTypesRepository.findOne({
@@ -48,15 +49,12 @@ export const makeCreatePetActionHandler = (
     await petActionsRepository.saveNewPetAction(petAction);
 
     res.status(201).end();
-  } catch (e) {
-    next(e);
-  }
-};
+  });
 
 export const makeGetAllPetActions = (
   petActionsRepository: PetActionsRepository
-): RequestHandler => async (req, res, next) => {
-  try {
+): RequestHandler =>
+  createHandler(async (req, res) => {
     const pagingOptions = await validateGetPetTypes(req);
     const actions = await petActionsRepository.getAllPetActions();
     const pagedResult = makePagedResult(
@@ -66,7 +64,4 @@ export const makeGetAllPetActions = (
     );
 
     res.status(200).json(pagedResult);
-  } catch (error) {
-    next(error);
-  }
-};
+  });

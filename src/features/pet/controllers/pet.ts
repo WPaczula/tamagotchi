@@ -6,15 +6,16 @@ import { User } from '../../user/models/user';
 import { PetHealthService } from '../services/pet-health';
 import { validatePetId, validateApplyActionRequest } from '../validators/pet';
 import { PetActionsService } from '../services/pet-action';
+import createHandler from '../../../utils/create-handler';
 
 export const makeCreatePetHandler = (
   petTypesRepository: PetTypesRepository,
   petsRepository: PetsRepository
-): RequestHandler => async (req, res, next) => {
-  const { name, petTypeId } = req.body;
-  const { id } = req.user as User;
+): RequestHandler =>
+  createHandler(async (req, res) => {
+    const { name, petTypeId } = req.body;
+    const { id } = req.user as User;
 
-  try {
     const pet = await makeNewPet(name, petTypeId, id);
 
     const petType = await petTypesRepository.findOne({
@@ -28,16 +29,13 @@ export const makeCreatePetHandler = (
     await petsRepository.saveNewPet(pet);
 
     res.status(201).end();
-  } catch (e) {
-    next(e);
-  }
-};
+  });
 
 export const makeGetPetHandler = (
   petsRepository: PetsRepository,
   petHealthService: PetHealthService
-): RequestHandler => async (req, res, next) => {
-  try {
+): RequestHandler =>
+  createHandler(async (req, res) => {
     const id = await validatePetId(req);
     const pet = await petsRepository.findOne({ id });
 
@@ -54,17 +52,14 @@ export const makeGetPetHandler = (
     };
 
     res.status(200).json(petDto);
-  } catch (e) {
-    next(e);
-  }
-};
+  });
 
 export const makeApplyActionHandler = (
   petsRepository: PetsRepository,
   actionsRepository: PetActionsRepository,
   petActionService: PetActionsService
-): RequestHandler => async (req, res, next) => {
-  try {
+): RequestHandler =>
+  createHandler(async (req, res) => {
     const { petId, actionId } = await validateApplyActionRequest(req);
     const { id: userId } = req.user as User;
 
@@ -83,7 +78,4 @@ export const makeApplyActionHandler = (
     await petActionService.applyAction(pet, action);
 
     res.status(204).end();
-  } catch (error) {
-    next(error);
-  }
-};
+  });
