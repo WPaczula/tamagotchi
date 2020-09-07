@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express';
-import { PetTypesRepository } from '../repositories/petTypes';
+import { PetTypesRepository } from '../repositories';
 import { makePetType } from '../models/petTypes';
 import { validateGetPetTypes } from '../validators/petTypes';
 import { makePagedResult } from '../../../utils/paging';

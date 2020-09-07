@@ -1,6 +1,9 @@
 import { RequestHandler } from 'express';
-import { PetsRepository } from '../repositories/pet';
-import { PetTypesRepository, PetActionsRepository } from '../repositories';
+import {
+  PetsRepository,
+  PetTypesRepository,
+  PetActionsRepository,
+} from '../repositories';
 import { makeNewPet, PetDto } from '../models/pet';
 import { User } from '../../user/models/user';
 import { PetHealthService } from '../services/pet-health';

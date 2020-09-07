@@ -20,5 +20,3 @@ export const validateNewPetAction = async (
     throw new ValidationError(error.message);
   }
 };
-
-validateNewPetAction;

@@ -1,5 +1,4 @@
-import { PetTypesRepository } from '../repositories';
-import { PetModifiersRepository } from '../repositories/petModifier';
+import { PetTypesRepository, PetModifiersRepository } from '../repositories';
 import { RequestHandler } from 'express';
 import { makeNewPetModifier } from '../models/petModifier';
 import createHandler from '../../../utils/create-handler';
