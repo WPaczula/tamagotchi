@@ -16,9 +16,7 @@ export const makePetModifiersRepository = (dbClient: DBClient) => {
     },
 
     checkExistingIds: async function (ids: number[]): Promise<number[]> {
-      const existingIds = (await this.findByIds(ids)).map((m) => m.id);
-
-      return existingIds;
+      return (await this.findByIds(ids)).map((m) => m.id);
     },
 
     findByIds: async (ids: number[]): Promise<PetModifier[]> => {

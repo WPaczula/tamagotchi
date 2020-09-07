@@ -54,9 +54,9 @@ export const makePetPropertiesRepository = (dbClient: DBClient) => {
         });
 
         dbClient.query('COMMIT');
-      } catch (e) {
+      } catch (error) {
         dbClient.query('ROLLBACK');
-        throw e;
+        throw error;
       }
     },
   };

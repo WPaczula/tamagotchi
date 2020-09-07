@@ -40,9 +40,9 @@ export const makePetsRepository = (dbClient: DBClient) => {
         }
 
         await dbClient.query('COMMIT');
-      } catch (e) {
+      } catch (error) {
         await dbClient.query('ROLLBACK');
-        throw e;
+        throw error;
       }
     },
 

@@ -5,8 +5,8 @@ const init = async () => {
   try {
     const client = await initDBClient();
     await makeServer(client);
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error(error);
     process.exit(1);
   }
 };
