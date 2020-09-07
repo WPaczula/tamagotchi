@@ -73,7 +73,7 @@ export const makeUpdateUserHandler = (
     }
 
     updatedUser = await validateUser(id, updatedUser);
-    usersRepository.updateUser(updatedUser);
+    await usersRepository.updateUser(updatedUser);
 
     res.status(204).end();
   });
@@ -92,7 +92,7 @@ export const makeDeleteUserHandler = (
       throw new Error('User does not exist');
     }
 
-    usersRepository.deleteUser(id);
+    await usersRepository.deleteUser(id);
 
     res.status(204).end();
   });
