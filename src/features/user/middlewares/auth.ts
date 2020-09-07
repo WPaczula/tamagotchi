@@ -34,7 +34,7 @@ export const initializeAuthentication = (
         try {
           const user = await userRepository.findOne({ email });
 
-          if (!user || !compareHash(user.password, password)) {
+          if (!user || !(await compareHash(user.password, password))) {
             return done(null, false, { message: 'Wrong username or password' });
           }
 

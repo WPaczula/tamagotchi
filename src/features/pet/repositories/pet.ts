@@ -29,15 +29,15 @@ export const makePetsRepository = (dbClient: DBClient) => {
           )
         ).rows;
 
-        petPropertyValues.forEach(async ({ petPropertyId, value }) => {
+        for (const { petPropertyId, value } of petPropertyValues) {
           await dbClient.query(
             `
             INSERT INTO pet_property_values (value, pet_property_id, pet_id, updated_at)
             VALUES ($1, $2, $3, $4)
-          `,
+            `,
             [value, petPropertyId, petId, new Date()]
           );
-        });
+        }
 
         await dbClient.query('COMMIT');
       } catch (e) {

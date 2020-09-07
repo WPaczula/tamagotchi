@@ -15,7 +15,7 @@ export const makeCreatePetActionHandler = (
   petModifiersRepository: PetModifiersRepository,
   petActionsRepository: PetActionsRepository
 ): RequestHandler =>
-  createHandler(async (req, res, next) => {
+  createHandler(async (req, res) => {
     const { name, petTypeId, petModifierIds } = req.body;
 
     const petAction = await makeNewPetAction(name, petTypeId, petModifierIds);
@@ -25,8 +25,8 @@ export const makeCreatePetActionHandler = (
     });
     if (!petType) {
       res.status(404);
-      next(
-        new Error(`Pet type with id ${petAction.petTypeId} could not be found`)
+      throw new Error(
+        `Pet type with id ${petAction.petTypeId} could not be found`
       );
     }
 
