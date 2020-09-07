@@ -1,5 +1,5 @@
 import { DBClient } from '../database';
-import { group } from 'console';
+import snakeCase from 'lodash.snakecase';
 
 export const findBy = async <T>(
   dbClient: DBClient,
@@ -31,7 +31,8 @@ export const findBy = async <T>(
   predicateFields.forEach((field, i) => {
     const isLast = i === predicateFields.length - 1;
 
-    sql = sql + `${predicateTablePrefix}.${field}=$${i + 1}`;
+    sql =
+      sql + `${predicateTablePrefix}.${snakeCase(field as string)}=$${i + 1}`;
 
     if (!isLast) {
       sql = sql + ' and ';

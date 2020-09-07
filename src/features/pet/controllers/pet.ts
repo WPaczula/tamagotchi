@@ -66,8 +66,8 @@ export const makeApplyActionHandler = (
     const { petId, actionId } = await validateApplyActionRequest(req);
     const { id: userId } = req.user as User;
 
-    const pet = await petsRepository.findOne({ id: petId });
-    if (!pet || pet.userId !== userId) {
+    const pet = await petsRepository.findOne({ id: petId, userId });
+    if (!pet) {
       res.status(404);
       throw new Error(`Pet with id ${petId} was not found`);
     }
